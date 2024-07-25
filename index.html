@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 请求示例</title>
+    <script>
+        function sendRequest() {
+            var num = document.getElementById("num").value;
+            var topic = document.getElementById("topic").value;
+
+            // 构建 API 请求 URL
+            var apiUrl = `https://api.lolimi.cn/API/dog/api.php?num=${num}&type=text&msg=${encodeURIComponent(topic)}`;
+
+            // 使用 Fetch API 发送 GET 请求
+            fetch(apiUrl)
+                .then(response => response.text())
+                。then(data => {
+                    document.getElementById("response").textContent = data; // 将响应内容显示在页面上
+                })
+                。catch(error => {
+                    console.error('请求失败：', error);
+                    document.getElementById("response").textContent = '请求失败，请重试。';
+                });
+        }
+    </script>
+</head>
+<body>
+    <h2>废话生成器</h2>
+    <label for="num">字数：</label>
+    <input type="number" id="num" name="num" min="1" required><br><br>
+
+    <label for="topic">主题：</label>
+    <input type="text" id="topic" name="topic" required><br><br>
+
+    <button onclick="sendRequest()">确定</button><br><br>
+
+    <div id="response"></div>
+</body>
+</html>
