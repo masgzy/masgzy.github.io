@@ -1,40 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API 请求示例</title>
-    <script>
-        function sendRequest() {
-            var num = document.getElementById("num").value;
-            var topic = document.getElementById("topic").value;
-
-            // 构建 API 请求 URL
-            var apiUrl = `https://api.lolimi.cn/API/dog/api.php?num=${num}&type=text&msg=${encodeURIComponent(topic)}`;
-
-            // 使用 Fetch API 发送 GET 请求
-            fetch(apiUrl)
-                .then(response => response.text())
-                。then(data => {
-                    document.getElementById("response").textContent = data; // 将响应内容显示在页面上
-                })
-                。catch(error => {
-                    console.error('请求失败：', error);
-                    document.getElementById("response").textContent = '请求失败，请重试。';
-                });
+    <title>简单网盘</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-    </script>
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-list {
+            margin-bottom: 20px;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background: #eee;
+            padding: 10px;
+            margin-bottom: 5px;
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h2>废话生成器</h2>
-    <label for="num">字数：</label>
-    <input type="number" id="num" name="num" min="1" required><br><br>
+    <div class="container">
+        <h1>网盘</h1>
+        <div class="file-list">
+            <h2>文件列表</h2>
+            <ul id="fileList"></ul>
+        </div>
+    </div>
+    <script>
+        // 定义文件数组
+        const files = [
+            { name: "[中文译名修正]Minecraft 1.21.51.02 armv8 release.apk", link: "https://ghgo.xyz/https://github.com/masgzy/zy/releases/download/large/Minecraft.1.21.51.02.armv8.release.apk" },
+            { name: "", link: "" }
+        ];
 
-    <label for="topic">主题：</label>
-    <input type="text" id="topic" name="topic" required><br><br>
+        // 动态生成文件列表
+        function generateFileList() {
+            const fileList = document.getElementById('fileList');
+            files.forEach(file => {
+                const li = document.createElement('li');
+                li.innerHTML = `${file.name} - <a href="${file.link}" target="_blank">下载</a>`;
+                fileList.appendChild(li);
+            });
+        }
 
-    <button onclick="sendRequest()">确定</button><br><br>
-
-    <div id="response"></div>
+        // 页面加载完成后生成文件列表
+        window.onload = generateFileList;
+    </script>
 </body>
 </html>
