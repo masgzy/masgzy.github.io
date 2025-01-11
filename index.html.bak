@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>下载页</title>
+    <title>简单网盘</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -51,7 +51,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>下载页</h1>
+        <h1>网盘</h1>
         <div class="file-list">
             <h2>文件列表</h2>
             <ul id="fileList"></ul>
