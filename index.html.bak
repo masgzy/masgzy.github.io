@@ -60,7 +60,7 @@
     <script>
         // 定义文件数组
         const files = [
-            { name: "[中文译名修正]Minecraft 1.21.51.02 armv8 release.apk", link: "https://ghproxy.cn/https://github.com/masgzy/zy/releases/download/large/Minecraft.1.21.51.02.armv8.release.apk" },
+            { name: "[中文译名修正]Minecraft 1.21.51.02 armv8 release.apk", link: "https://ghgo.top/https://github.com/masgzy/zy/releases/download/large/Minecraft.1.21.51.02.armv8.release.apk" },
             { name: "", link: "" }
         ];
 
