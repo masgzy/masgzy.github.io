@@ -61,7 +61,7 @@
         // 定义文件数组
         const files = [
             { name: "[中文译名修正]Minecraft 1.21.51.02 armv8 release.apk", link: "https://ghproxy.cn/https://github.com/masgzy/zy/releases/download/large/Minecraft.1.21.51.02.armv8.release.apk" },
-            { name: "原神5.0私服.apk(GI5.0_proxy.apk)", link: "https://ghproxy.cc/https://github.com/masgzy/zy/releases/download/large/GI5.0_proxy.apk" },
+            { name: "原神5.0私服.apk(GI5.0_proxy.apk)", link: "https://github.com/masgzy/zy/releases/download/large/GI5.0_proxy.apk" },
             { name: "", link: "" },
             { name: "", link: "" }
         ];
