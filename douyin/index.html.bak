@@ -39,7 +39,7 @@
             display: none; /* 初始隐藏结果 */
         }
     </style>
-    <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/4.0.0/tesseract.min.js"></script>
 </head>
 
 <body>
