@@ -87,7 +87,7 @@
 		
 		        var inputElement = document.getElementById('inputUrl');
 		        var requestURL = inputElement.value;
-		         var captchaKey = obj.captchaKey;
+		         var captchaKey = obj.key;
 		
 		        await performOCR(svgString, requestURL, captchaKey); // 传入验证码图片、视频链接和验证码密钥
 		        } catch (error) {
