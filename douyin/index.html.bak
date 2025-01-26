@@ -104,6 +104,11 @@
 		 
 		async function performOCR(svgString, requestURL, captchaKey) {
 		    try {
+		    
+                const blob = new Blob([svgString], {type: "image/svg+xml"});
+                const url = URL.createObjectURL(blob);
+                。document.getElementById('svgImage').src = url;
+
 		// 确保OpenCV已经加载
 		if (cv instanceof Promise) {
 		    await cv;
