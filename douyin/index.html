@@ -70,6 +70,7 @@
         }
 
          
+ 
 async function performOCR(svgString) {
     try {
         // 确保OpenCV已经加载
@@ -92,10 +93,15 @@ async function performOCR(svgString) {
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
 
+                // 创建OpenCV的Mat对象
+                let mat = new cv.Mat(canvas.height, canvas.width, cv.CV_8UC4);
+                let data = new Uint8Array(canvas.width * canvas.height * 4);
+                ctx.getImageData(0, 0, canvas.width, canvas.height).data.set(data);
+                mat.data.set(data);
+
                 // 转换为灰度图
-                const src = cv.imread(canvas);
                 const gray = new cv.Mat();
-                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+                cv.cvtColor(mat, gray, cv.COLOR_RGBA2GRAY);
 
                 // 开运算（先腐蚀后膨胀）
                 const kernel = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(3, 3));
@@ -106,7 +112,7 @@ async function performOCR(svgString) {
                 cv.imshow(canvas, opening);
 
                 // 释放资源
-                src.delete();
+                mat.delete();
                 gray.delete();
                 kernel.delete();
                 opening.delete();
@@ -141,6 +147,7 @@ async function performOCR(svgString) {
         alert('OCR 失败: ' + error.message);
     }
 }
+ 
  
         function toBinary(imageData) {
             const { data, width, height } = imageData;
