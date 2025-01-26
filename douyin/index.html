@@ -47,7 +47,7 @@
     </style>
     <!-- 引入指定版本的 jQuery -->
     <script src="https://static.qiantucdn.com/assets/components/jquery-3.7.1.min.js"></script>
-    <!-- 引入指定版本的 Tesseract.js -->
+    <!-- 引入 Tesseract.js 6.0.0 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
 </head>
 <body>
@@ -112,10 +112,8 @@ async function performOCR(svgString) {
                     logger: (m) => console.log(m), // 可选日志输出
                 });
 
-                // 初始化 OCR Worker
-                await worker.initialize();
-                await worker.loadLanguage('eng');
-                await worker.initialize('eng');
+                await worker.loadLanguage('eng'); // 加载语言包
+                await worker.initialize('eng');   // 初始化 OCR 引擎
 
                 // 设置白名单，仅识别数字和字母
                 const { data: { text } } = await worker.recognize(dataUrl, {
