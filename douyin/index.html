@@ -118,8 +118,11 @@ async function recognizeText(imageDataUrl, obj) {
 
     console.log('识别结果:', text); // 输出识别结果
 
+    // 去除换行符和空白字符
+    const cleanedText = text.replace(/\s+/g, '');
+
     // 调用 parse 函数
-    await parse($('#inputUrl').val(), obj.key, text);
+    await parse($('#inputUrl').val(), obj.key, cleanedText);
 
     await worker.terminate();
 }
