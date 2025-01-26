@@ -40,7 +40,7 @@
         }
     </style>
     <script src="https://static.qiantucdn.com/assets/components/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/4.0.0/tesseract.min.js"></script>
 </head>
 
 <body>
@@ -61,6 +61,7 @@ async function parseCaptcha() {
     try {
         const response = await fetch('https://ver.kukutool.com/captcha');
         const obj = await response.json();
+        console.log('获取验证码成功:', obj);
         await ocrcaptcha(obj);
     } catch (error) {
         console.error('请求失败:', error);
@@ -84,6 +85,7 @@ async function ocrcaptcha(obj) {
 
     // 设置 Image 对象的 src 属性为 SVG 的 URL
     img.onload = async function() {
+        console.log('图片加载成功');
         // 将图片绘制到 canvas 上
         canvas.width = img.width;
         canvas.height = img.height;
@@ -91,6 +93,7 @@ async function ocrcaptcha(obj) {
 
         // 将 canvas 转换为 Base64 编码的图片字符串
         const dataUrl = canvas.toDataURL("image/png");
+        console.log('Base64 编码的图片字符串生成成功:', dataUrl);
 
         // 之后就可以使用 Tesseract.js 对 dataUrl 进行识别了
         await recognizeText(dataUrl, obj);
@@ -113,7 +116,7 @@ async function recognizeText(imageDataUrl, obj) {
         tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
     });
 
-    console.log(text); // 输出识别结果
+    console.log('识别结果:', text); // 输出识别结果
 
     // 调用 parse 函数
     await parse($('#inputUrl').val(), obj.key, text);
@@ -142,6 +145,7 @@ async function parse(url, key, text) {
         });
 
         const obj1 = await response.json();
+        console.log('解析结果:', obj1);
         const status = obj1.status;
 
         if (status === 0) {
