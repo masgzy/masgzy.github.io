@@ -108,14 +108,17 @@ async function performOCR(svgString) {
                 const dataUrl = canvas.toDataURL('image/png');
 
                 // 使用 Tesseract.js 6.0.0 进行 OCR
-                const { createWorker } = Tesseract;
-                const worker = await createWorker();
+                const worker = Tesseract.createWorker({
+                    logger: (m) => console.log(m), // 可选日志输出
+                });
 
-                // 加载并识别语言
-                await worker.loadLanguage('eng');
-                await worker.initialize('eng');
+                await worker.loadLanguage('eng'); // 加载语言包
+                await worker.initialize('eng');   // 初始化 OCR 引擎
 
-                const { data: { text } } = await worker.recognize(dataUrl);
+                // 设置白名单，仅识别数字和字母
+                const { data: { text } } = await worker.recognize(dataUrl, {
+                    tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+                });
 
                 await worker.terminate();
 
