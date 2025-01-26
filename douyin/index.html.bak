@@ -42,7 +42,7 @@
         }
     </style>
     <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
-   <script src="https://ghproxy.cc/https://raw.githubusercontent.com/masgzy/masgzy.github.io/main/douyin/opencv.js"></script>
+   <script src="https://gcore.jsdelivr.net/npm/@techstark/opencv-js@4.10.0-release.1/dist/opencv.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -57,22 +57,24 @@
         </div>
     </div>
     <script>
-                // 动态加载 OpenCV.js
-                //var script = document.createElement('script');
-                //script.src = 'https://ghproxy.cc/https://raw.githubusercontent.com/masgzy/masgzy.github.io/main/douyin/opencv.js'; // 确保 opencv.js 在您的服务器上可访问
-                script.onload = function() {
-                    // 检测 OpenCV 是否成功加载
-                    if (typeof cv !== 'undefined' && typeof cv.imread === 'function') {
-                        alert('OpenCV 已成功加载！');
-                        // 在这里可以继续执行需要 OpenCV 的代码
-                    } else {
-                        alert('OpenCV 加载失败！');
-                    }
-                };
-                script.onerror = function() {
-                    alert('OpenCV 加载失败！');
-                };
-                document.body.appendChild(script);
+                 
+    // 动态加载 OpenCV.js
+    var script = document.createElement('script');
+    script.src = 'https://gcore.jsdelivr.net/npm/@techstark/opencv-js@4.10.0-release.1/dist/opencv.min.js'; // 确保这是正确的路径
+    script.onload = function() {
+        // 检测 OpenCV 是否成功加载
+        if (typeof cv !== 'undefined' && typeof cv.imread === 'function') {
+            alert('OpenCV 已成功加载！');
+            // 在这里可以继续执行需要 OpenCV 的代码
+        } else {
+            alert('OpenCV 加载失败！');
+        }
+    };
+    script.onerror = function() {
+        alert('OpenCV 加载失败！');
+    };
+    document.body.appendChild(script);
+ 
             
     </script>
     <script>
