@@ -166,7 +166,7 @@ async function performOCR(svgString, requestURL, cleanedText) {
                 if (cleanedText) {
                     console.log("识别到验证码:", cleanedText);
                     // 成功识别验证码后调用parse函数
-                    parse(obj.requestURL, obj.captchaKey, cleanedText);
+                    parse(requestURL, captchaKey, cleanedText);
                 } else {
                     console.error("未能识别到有效的验证码");
                     alert("未能识别到有效的验证码，请检查验证码图像");
@@ -209,9 +209,9 @@ async function performOCR(svgString, requestURL, cleanedText) {
                         'Cookie': 'NEXT_LOCALE=zh'
                     },
                     body: JSON.stringify({
-                        requestURL: url,
-                        captchaKey: key,
-                        captchaInput: text
+                        requestURL: requestURL,
+                        captchaKey: captchaKey,
+                        captchaInput: cleanedText
                     })
                 });
 
