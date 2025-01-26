@@ -104,6 +104,11 @@
 		 
 		async function performOCR(svgString, requestURL, captchaKey) {
 		    try {
+		    
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(svgString, "image/svg+xml");
+                const svgElement = doc.documentElement;
+                document.getElementById('svgContainer').appendChild(svgElement);
 		// 确保OpenCV已经加载
 		if (cv instanceof Promise) {
 		    await cv;
