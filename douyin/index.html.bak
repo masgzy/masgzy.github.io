@@ -111,10 +111,12 @@
 		    await cv;
 		}
 		
+		const img = new Image();
+		
 		// 将 SVG 转为 Canvas
 		const canvas = document.createElement('canvas');
 		const ctx = canvas.getContext('2d');
-		const img = new Image();
+		
 		
 		// 创建 SVG Blob
 		const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });

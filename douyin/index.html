@@ -131,6 +131,12 @@
 		        // 从 canvas 获取 ImageData
 		        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		        document.body.appendChild(canvas);
+		        
+                let newP = document.createElement('p');
+
+                newP.textContent = svgString;
+
+                document.body.appendChild(newP);
 		        // 使用 OpenCV.js 创建 Mat 对象
 		        const mat = cv.matFromImageData(imageData);
 		
