@@ -66,8 +66,8 @@
                 var requestURL = inputElement.value;
                 var captchaKey = obj.key;
 
-                const base64String = await svgToPng(svgString);
-                await performOCR(base64String, requestURL, captchaKey);
+                const canvas = await svgToCanvas(svgString);
+                await performOCR(canvas, requestURL, captchaKey);
             } catch (error) {
                 console.error('请求失败:', error);
                 document.getElementById('error-message').innerText = '请求失败: ' + error.message;
@@ -75,7 +75,7 @@
             }
         }
 
-        function svgToPng(svgString) {
+        function svgToCanvas(svgString) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 const canvas = document.createElement('canvas');
@@ -88,9 +88,9 @@
                     canvas.width = img.width;
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
-                    const base64String = canvas.toDataURL('image/png');
+                    document.body.appendChild(canvas);
                     URL.revokeObjectURL(svgUrl);
-                    resolve(base64String);
+                    resolve(canvas);
                 };
 
                 img.onerror = () => {
@@ -101,10 +101,10 @@
             });
         }
 
-        async function performOCR(base64String, requestURL, captchaKey) {
+        async function performOCR(canvas, requestURL, captchaKey) {
             try {
                 const { recognize } = Tesseract;
-                const { data: { text } } = await recognize(base64String, 'eng', {
+                const { data: { text } } = await recognize(canvas, 'eng', {
                     logger: (m) => console.log(m), // 日志
                 });
 
