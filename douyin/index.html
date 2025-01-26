@@ -79,12 +79,8 @@ function getcaptcha() {
             'If-None-Match': 'W/"15a5-WcFyYiPuc4/chOgdHp33nceQCYY"'
         },
         success: function(response) {
-            if (typeof response === 'string') {
-                var obj = JSON.parse(response);
-                ocrcaptcha(obj);
-            } else {
-                console.error('响应不是字符串:', response);
-            }
+            // 直接传递 response 对象，不需要再次解析
+            ocrcaptcha(response);
         },
         error: function(xhr, status, error) {
             console.error('请求失败:', error);
