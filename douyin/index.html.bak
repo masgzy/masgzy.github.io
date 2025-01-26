@@ -1,59 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #result {
-            display: none; /* 初始隐藏结果 */
-        }
-    </style>
-    <script src="https://static.qiantucdn.com/assets/components/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
+<script src="https://static.qiantucdn.com/assets/components/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <input type="text" id="inputUrl" placeholder="输入视频链接">
-        <button onclick="getcaptcha()">获取验证码</button>
-        <div id="result">
-            <h2 id="title"></h2>
-            <img id="cover" src="" alt="封面" style="max-width: 100%; height: auto;">
-            <video id="video" src="" controls style="max-width: 100%; height: auto;"></video>
-            <p id="coverUrl"></p>
-            <p id="videoUrl"></p>
-        </div>
+    <input type="text" id="inputUrl" placeholder="输入视频链接">
+    <button onclick="getcaptcha()">获取验证码</button>
+    <div id="result">
+        <h2 id="title"></h2>
+        <img id="cover" src="" alt="封面">
+        <video id="video" src="" controls></video>
+        <p id="coverUrl"></p>
+        <p id="videoUrl"></p>
     </div>
 
 <script>
@@ -79,16 +39,11 @@ function getcaptcha() {
             'If-None-Match': 'W/"15a5-WcFyYiPuc4/chOgdHp33nceQCYY"'
         },
         success: function(response) {
-            if (typeof response === 'string') {
-                var obj = JSON.parse(response);
-                ocrcaptcha(obj);
-            } else {
-                console.error('响应不是字符串:', response);
-            }
+            var obj = JSON.parse(response);
+            ocrcaptcha(obj);
         },
         error: function(xhr, status, error) {
             console.error('请求失败:', error);
-            alert('请求失败: ' + error);
         }
     });
 }
@@ -122,29 +77,22 @@ function parse(url, key, text) {
             captchaInput: text
         }),
         success: function(response) {
-            if (typeof response === 'string') {
-                var obj1 = JSON.parse(response);
-                var status = obj1.status;
-                if (status === 0) {
-                    var cover = obj1.data.cover;
-                    var title = obj1.data.title;
-                    var videoUrl = obj1.data.url;
+            var obj1 = JSON.parse(response);
+            var status = obj1.status;
+            if (status === 0) {
+                var cover = obj1.data.cover;
+                var title = obj1.data.title;
+                var videoUrl = obj1.data.url;
 
-                    // 显示结果
-                    $('#title').text(title);
-                    $('#cover').attr('src', cover);
-                    $('#video').attr('src', videoUrl);
-                    $('#coverUrl').text('封面链接: ' + cover);
-                    $('#videoUrl').text('视频链接: ' + videoUrl);
-
-                    // 显示结果区域
-                    $('#result').show();
-                } else {
-                    console.error('解析失败:', obj1.message);
-                    alert('解析失败: ' + obj1.message);
-                }
+                // 显示结果
+                $('#title').text(title);
+                $('#cover').attr('src', cover);
+                $('#video').attr('src', videoUrl);
+                $('#coverUrl').text('封面链接: ' + cover);
+                $('#videoUrl').text('视频链接: ' + videoUrl);
             } else {
-                console.error('响应不是字符串:', response);
+                console.error('解析失败:', obj1.message);
+                alert('解析失败: ' + obj1.message);
             }
         },
         error: function(xhr, status, error) {
