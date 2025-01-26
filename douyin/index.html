@@ -105,15 +105,25 @@
                             logger: (m) => console.log(m), // 日志
                         });
 
+                        // 输出OCR识别结果
+                        console.log("OCR识别结果：", text);
+
                         // 清理并返回结果
                         const cleanedText = text.replace(/[^a-zA-Z0-9]/g, ''); // 去除非字母数字的字符
-                        resolve(cleanedText);
+                        if (cleanedText) {
+                            console.log("识别到验证码:", cleanedText);
+                            // 成功识别验证码后调用parse函数
+                            parse(obj.requestURL, obj.captchaKey, cleanedText);
+                        } else {
+                            console.error("未能识别到有效的验证码");
+                            alert("未能识别到有效的验证码，请检查验证码图像");
+                        }
                     };
                     img.src = svgUrl;
                 });
             } catch (error) {
                 console.error('OCR 失败:', error);
-                return null;
+                alert('OCR 失败: ' + error.message);
             }
         }
 
@@ -143,6 +153,7 @@
 
         async function parse(url, key, text) {
             try {
+                console.log("开始解析数据...");
                 const response = await fetch('https://dy.kukutool.com/api/parse', {
                     method: 'POST',
                     headers: {
