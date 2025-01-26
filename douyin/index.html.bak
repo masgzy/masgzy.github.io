@@ -46,6 +46,7 @@
             border: 1px solid #000; /* 添加边框以便看到canvas */
         }
     </style>
+    <script async src="https://gcore.jsdelivr.net/npm/@techstark/opencv-js@4.10.0-release.1/dist/opencv.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
 </head>
 <body>
@@ -107,11 +108,40 @@
                 const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
                 const svgUrl = URL.createObjectURL(svgBlob);
 
-                img.onload = () => {
+                img.onload = async () => {
                     canvas.width = img.width;
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
                     URL.revokeObjectURL(svgUrl);
+
+                    // 使用OpenCV.js进行图像预处理
+                    await cvReady();
+                    const mat = cv.matFromImageData(ctx.getImageData(0, 0, canvas.width, canvas.height));
+
+                    // 转换为灰度图
+                    const gray = new cv.Mat();
+                    cv.cvtColor(mat, gray, cv.COLOR_RGBA2GRAY);
+
+                    // 二值化
+                    const binary = new cv.Mat();
+                    cv.threshold(gray, binary, 128, 255, cv.THRESH_BINARY);
+
+                    // 填充空心字符
+                    const filled = new cv.Mat();
+                    cv.floodFill(binary, filled, new cv.Point(0, 0), [255, 255, 255]);
+
+                    // 将处理后的图像写回Canvas
+                    const result = new cv.Mat();
+                    cv.cvtColor(filled, result, cv.COLOR_GRAY2RGBA);
+                    ctx.putImageData(result.getData(), 0, 0);
+
+                    // 释放资源
+                    mat.delete();
+                    gray.delete();
+                    binary.delete();
+                    filled.delete();
+                    result.delete();
+
                     resolve(canvas);
                 };
 
@@ -121,6 +151,19 @@
 
                 img.src = svgUrl;
             });
+        }
+
+        async function cvReady() {
+            if (typeof cv === 'undefined') {
+                await new Promise((resolve) => {
+                    const check = setInterval(() => {
+                        if (typeof cv !== 'undefined') {
+                            clearInterval(check);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            }
         }
 
         async function performOCR(canvas, requestURL, captchaKey) {
