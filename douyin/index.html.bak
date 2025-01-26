@@ -193,7 +193,7 @@
 		    return new ImageData(data, width, height);
 		}
 		
-		async function parse(url, key, text) {
+		async function parse(requestURL, captchaKey, cleanedText) {
 		    try {
 		        console.log("开始解析数据...");
 		        const response = await fetch('https://dy.kukutool.com/api/parse', {
