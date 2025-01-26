@@ -36,7 +36,7 @@
             background-color: #0056b3;
         }
         #result {
-            display: none; /* 初始隐藏结果 */
+            display: none;
             margin-top: 20px;
         }
         #result img, #result video {
@@ -108,12 +108,12 @@ async function performOCR(svgString) {
                 const dataUrl = canvas.toDataURL('image/png');
 
                 // 使用 Tesseract.js 6.0.0 进行 OCR
-                const { createWorker } = Tesseract;
-                const worker = createWorker({
+                const worker = Tesseract.createWorker({
                     logger: (m) => console.log(m), // 可选日志输出
                 });
 
-                await worker.load();
+                // 初始化 OCR Worker
+                await worker.initialize();
                 await worker.loadLanguage('eng');
                 await worker.initialize('eng');
 
