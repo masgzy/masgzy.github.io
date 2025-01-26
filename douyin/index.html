@@ -78,26 +78,24 @@
 		            
 	</script>
 	<script>
-		 
-		 
 		async function parseCaptcha() {
 		    try {
-		const response = await fetch('https://ver.kukutool.com/captcha');
-		const obj = await response.json();
-		// 假设 obj 对象包含 requestURL 和 captchaKey 属性
+		        const response = await fetch('https://ver.kukutool.com/captcha');
+		        const obj = await response.json();
+		        // 假设 obj 对象包含 requestURL 和 captchaKey 属性
 		 
 		
-		var inputElement = document.getElementById('inputUrl');
-		var obj.requestURL = inputElement.value;
-		requestURL = obj.requestURL
-		        captchaKey = obj.captchaKey
+		        var inputElement = document.getElementById('inputUrl');
+		        var obj.requestURL = inputElement.value;
+		        requestURL = obj.requestURL
+		         captchaKey = obj.captchaKey
 		
-		await performOCR(requestURL, captchaKey); // 传入验证码图片、视频链接和验证码密钥
-		    } catch (error) {
-		console.error('请求失败:', error);
-		alert('请求失败: ' + error.message);
-		    }
-		}
+		        await performOCR(requestURL, captchaKey); // 传入验证码图片、视频链接和验证码密钥
+		        } catch (error) {
+		    console.error('请求失败:', error);
+		    alert('请求失败: ' + error.message);
+		            }
+		        }
 		
 		
 		
