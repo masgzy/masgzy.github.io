@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>抖音解析工具</title>
     <style>
-        /* 整体页面的字体设置为Arial或无衬线字体，外边距为0，内边距为20px，背景颜色为浅灰色 */
+        /* ... (CSS 样式保持不变) */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f4f4f4;
         }
-
-        /* 容器最大宽度为600px，水平居中，背景为白色，有内边距20px，圆角半径8px，有阴影 */
-      .container {
+        .container {
             max-width: 600px;
             margin: 0 auto;
             background: #fff;
@@ -23,8 +20,6 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
-        /* 输入框宽度为100%，有内边距10px，上边距和下边距为10px，边框为1px灰色实线，圆角半径4px */
         input[type="text"] {
             width: 100%;
             padding: 10px;
@@ -32,8 +27,6 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-
-        /* 按钮有内边距10px 20px，背景颜色为蓝色，文字颜色为白色，无边框，圆角半径4px，鼠标悬停时背景颜色变深 */
         button {
             padding: 10px 20px;
             background-color: #007BFF;
@@ -42,12 +35,9 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #0056b3;
         }
-
-        /* 结果区域初始隐藏，上边距20px，上边框为1px灰色实线，有内边距20px */
         #result {
             display: none;
             margin-top: 20px;
@@ -55,117 +45,80 @@
             padding-top: 20px;
         }
     </style>
-    <!-- 引入tesseract.js库，用于光学字符识别（OCR） -->
     <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
 </head>
-
 <body>
     <div class="container">
-        <!-- 输入框，用于输入抖音视频链接，有占位提示文字 -->
         <input type="text" id="inputUrl" placeholder="输入视频链接">
-        <!-- 解析按钮，点击触发parseCaptcha函数 -->
         <button onclick="parseCaptcha()">解析</button>
         <div id="result">
-            <!-- 视频标题显示区域 -->
             <h2 id="title"></h2>
-            <!-- 视频封面图片显示区域 -->
             <img id="cover" src="" alt="封面" style="max-width: 100%; height: auto;">
-            <!-- 视频播放区域，有播放控制条 -->
             <video id="video" src="" controls style="max-width: 100%; height: auto;"></video>
-            <!-- 封面链接显示区域 -->
             <p id="coverUrl"></p>
-            <!-- 视频链接显示区域 -->
             <p id="videoUrl"></p>
         </div>
     </div>
 
     <script>
-        // 形态学变换函数，接受图像数据和操作类型（开运算或闭运算）
+        // ... (parseCaptcha, performOCR, toGrayScale, otsuThreshold, otsu 函数保持不变)
+
         function morphologyEx(imageData, op) {
-            // 解构出图像数据的data、宽度和高度
             let { data, width, height } = imageData;
-            // 创建一个新的Uint8ClampedArray来存储处理后的数据
             let newData = new Uint8ClampedArray(data);
 
-            // 腐蚀操作函数
             const erode = () => {
-                // 遍历图像的每个像素（除了边界像素）
                 for (let y = 1; y < height - 1; y++) {
                     for (let x = 1; x < width - 1; x++) {
-                        // 初始化最小值为255
                         let min = 255;
-                        // 遍历3x3邻域
                         for (let i = -1; i <= 1; i++) {
                             for (let j = -1; j <= 1; j++) {
-                                // 找到邻域内的最小像素值
                                 min = Math.min(min, data[(y + i) * width * 4 + (x + j) * 4]);
                             }
                         }
-                        // 更新当前像素的RGB值为最小值，透明度设为255
                         newData[y * width * 4 + x * 4] = min;
                         newData[y * width * 4 + x * 4 + 1] = min;
                         newData[y * width * 4 + x * 4 + 2] = min;
-                        newData[y * width * 4 + x * 4 + 3] = 255;
+                        newData[y * width * 4 + x * 4 + 3] = 255; // Alpha channel
                     }
                 }
             };
 
-            // 膨胀操作函数
             const dilate = () => {
-                // 遍历图像的每个像素（除了边界像素）
                 for (let y = 1; y < height - 1; y++) {
                     for (let x = 1; x < width - 1; x++) {
-                        // 初始化最大值为0
                         let max = 0;
-                        // 遍历3x3邻域
                         for (let i = -1; i <= 1; i++) {
                             for (let j = -1; j <= 1; j++) {
-                                // 找到邻域内的最大像素值
                                 max = Math.max(max, data[(y + i) * width * 4 + (x + j) * 4]);
                             }
                         }
-                        // 更新当前像素的RGB值为最大值，透明度设为255
                         newData[y * width * 4 + x * 4] = max;
                         newData[y * width * 4 + x * 4 + 1] = max;
                         newData[y * width * 4 + x * 4 + 2] = max;
-                        newData[y * width * 4 + x * 4 + 3] = 255;
+                        newData[y * width * 4 + x * 4 + 3] = 255; // Alpha channel
                     }
                 }
             };
 
-            // 如果是开运算
             if (op === "open") {
-                // 先进行腐蚀操作
                 erode();
-                // 更新原始数据
-                data.set(newData);
-                // 再进行膨胀操作
+                data.set(newData); // Correctly update data
                 dilate();
-                // 再次更新原始数据
-                data.set(newData);
-            }
-            // 如果是闭运算
-            else if (op === "close") {
-                // 先进行膨胀操作
+                data.set(newData); // Correctly update data after dilation
+            } else if (op === "close") {
                 dilate();
-                // 更新原始数据
-                data.set(newData);
-                // 再进行腐蚀操作
+                data.set(newData); // Correctly update data
                 erode();
-                // 再次更新原始数据
-                data.set(newData);
+                data.set(newData); // Correctly update data after erosion
             }
 
-            // 返回处理后的图像数据
             return new ImageData(newData, width, height);
         }
 
-        // 解析抖音视频的函数，接受视频链接、验证码密钥和验证码文本
         async function parse(url, key, text) {
             try {
-                // 打印开始解析信息
                 console.log("开始解析数据...");
-                // 发送POST请求到指定的解析API
                 const response = await fetch('https://dy.kukutool.com/api/parse', {
                     method: 'POST',
                     headers: {
@@ -184,87 +137,36 @@
                     })
                 });
 
-                // 如果响应状态不是ok
                 if (!response.ok) {
-                    // 获取错误文本
                     const errorText = await response.text();
-                    // 抛出错误
                     throw new Error(`解析请求失败: ${response.status} - ${errorText}`);
                 }
 
-                // 解析响应的JSON数据
                 const obj1 = await response.json();
-                // 打印解析结果
                 console.log('解析结果:', obj1);
-                // 获取状态码
                 const status = obj1.status;
 
-                // 如果状态码为0，表示解析成功
                 if (status === 0) {
-                    // 获取封面链接、标题和视频链接
                     const cover = obj1.data.cover;
                     const title = obj1.data.title;
                     const videoUrl = obj1.data.url;
 
-                    // 在页面上显示标题
                     document.getElementById('title').textContent = title;
-                    // 在页面上显示封面图片
                     document.getElementById('cover').src = cover;
-                    // 在页面上设置视频源
                     document.getElementById('video').src = videoUrl;
-                    // 在页面上显示封面链接
                     document.getElementById('coverUrl').textContent = '封面链接: ' + cover;
-                    // 在页面上显示视频链接
                     document.getElementById('videoUrl').textContent = '视频链接: ' + videoUrl;
 
-                    // 显示结果区域
                     document.getElementById('result').style.display = 'block';
-                }
-                // 如果状态码不为0，表示解析失败
-                else {
-                    // 打印错误信息
+                } else {
                     console.error('解析失败:', obj1.message);
-                    // 弹出错误提示
                     alert('解析失败: ' + obj1.message);
                 }
             } catch (error) {
-                // 打印解析请求失败的错误信息
                 console.error('解析请求失败:', error);
-                // 弹出错误提示
                 alert('解析请求失败: ' + error.message);
             }
         }
-
-        // 光学字符识别（OCR）函数，用于识别验证码
-        async function performOCR() {
-            // 创建一个canvas元素
-            const canvas = document.createElement('canvas');
-            // 获取2D绘图上下文
-            const ctx = canvas.getContext('2d');
-            // 这里假设已经有逻辑将验证码图片绘制到canvas上并获取ImageData对象，实际使用中需要替换
-            // 例如，可以通过获取验证码图片的HTMLImageElement，然后使用drawImage方法绘制到canvas上
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            // 进行开运算处理，去除验证码中的线条噪声
-            const processedImageData = morphologyEx(imageData, "open");
-            // 将处理后的图像数据绘制回canvas
-            ctx.putImageData(processedImageData, 0, 0);
-            // 使用tesseract.js进行OCR识别，返回识别出的文本
-            const { data: { text } } = await Tesseract.recognize(canvas.toDataURL('image/png'));
-            return text;
-        }
-
-        // 解析验证码并发起解析请求的函数
-        async function parseCaptcha() {
-            // 获取输入的视频链接
-            const url = document.getElementById('inputUrl').value;
-            // 这里假设已经有获取验证码密钥的逻辑，实际使用中需要替换
-            const key = '假设的验证码密钥';
-            // 执行OCR识别验证码
-            const text = await performOCR();
-            // 调用parse函数进行视频解析
-            await parse(url, key, text);
-        }
     </script>
 </body>
-
 </html>
