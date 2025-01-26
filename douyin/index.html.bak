@@ -168,10 +168,11 @@
 
         async function performOCR(canvas, requestURL, captchaKey) {
             try {
-                const { recognize } = Tesseract;
-                const { data: { text } } = await recognize(canvas, 'eng', {
+                const { recognize } = Tesseract.create({
                     logger: (m) => console.log(m), // 日志
                 });
+
+                const { data: { text } } = await recognize(canvas, 'eng');
 
                 console.log("OCR识别结果：", text);
                 const cleanedText = text.replace(/[^a-zA-Z0-9]/g, ''); // 去除非字母数字的字符
