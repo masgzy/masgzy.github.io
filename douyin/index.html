@@ -61,7 +61,6 @@ async function parseCaptcha() {
     try {
         const response = await fetch('https://ver.kukutool.com/captcha');
         const obj = await response.json();
-        console.log('获取验证码成功:', obj);
         await ocrcaptcha(obj);
     } catch (error) {
         console.error('请求失败:', error);
@@ -91,8 +90,26 @@ async function ocrcaptcha(obj) {
         canvas.height = img.height;
         ctx.drawImage(img, 0, 0);
 
+        // 图像预处理：调整图像大小、灰度化、二值化
+        const processedCanvas = document.createElement('canvas');
+        const processedCtx = processedCanvas.getContext('2d');
+        processedCanvas.width = canvas.width;
+        processedCanvas.height = canvas.height;
+        processedCtx.drawImage(canvas, 0, 0);
+
+        // 灰度化
+        const imageData = processedCtx.getImageData(0, 0, processedCanvas.width, processedCanvas.height);
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const avg = (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 3;
+            imageData.data[i] = avg; // red
+            imageData.data[i + 1] = avg; // green
+            imageData.data[i + 2] = avg; // blue
+            imageData.data[i + 3] = 255; // alpha
+        }
+        processedCtx.putImageData(imageData, 0, 0);
+
         // 将 canvas 转换为 Base64 编码的图片字符串
-        const dataUrl = canvas.toDataURL("image/png");
+        const dataUrl = processedCanvas.toDataURL("image/png");
         console.log('Base64 编码的图片字符串生成成功:', dataUrl);
 
         // 之后就可以使用 Tesseract.js 对 dataUrl 进行识别了
