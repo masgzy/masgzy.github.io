@@ -71,7 +71,7 @@
         var requestURL = inputElement.value;
         var captchaKey = obj.key;
 
-        const threshold = 70; // 设置阈值为80
+        const threshold = 100; // 设置阈值为80
         const cleanedSvgString = removeShortPaths(svgString, threshold);
         const canvas = await svgToCanvas(cleanedSvgString);
         document.body.appendChild(canvas); // 确保在图像加载完成后添加canvas
