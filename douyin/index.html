@@ -71,7 +71,10 @@
                 var requestURL = inputElement.value;
                 var captchaKey = obj.key;
 
-                const canvas = await svgToCanvas(svgString);
+                const threshold = 80; 
+                // 你可以根据实际情况调整这个阈值
+                const cleanedSvgString = removeShortPaths(svgString, threshold);
+                const canvas = await svgToCanvas(cleanedSvgString);
                 document.body.appendChild(canvas); // 确保在图像加载完成后添加canvas
                 await performOCR(canvas, requestURL, captchaKey);
             } catch (error) {
@@ -79,6 +82,22 @@
                 document.getElementById('error-message').innerText = '请求失败: ' + error.message;
                 document.getElementById('error-message').style.display = 'block';
             }
+        }
+
+        function removeShortPaths(svgString, threshold) {
+            const parser = new DOMParser();
+            const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+            const paths = svgDoc.querySelectorAll('path');
+
+            paths.forEach(path => {
+                const path2D = new Path2D(path.getAttribute('d'));
+                const length = path2D.getLength();
+                if (length < threshold) {
+                    path.remove();
+                }
+            });
+
+            return new XMLSerializer().serializeToString(svgDoc.documentElement);
         }
 
         function svgToCanvas(svgString) {

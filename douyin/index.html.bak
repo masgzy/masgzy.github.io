@@ -40,6 +40,11 @@
         #result {
             display: none;
         }
+        canvas {
+            display: block; /* 确保canvas可见 */
+            margin: 20px 0;
+            border: 1px solid #000; /* 添加边框以便看到canvas */
+        }
     </style>
     <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
 </head>
@@ -67,6 +72,7 @@
                 var captchaKey = obj.key;
 
                 const canvas = await svgToCanvas(svgString);
+                document.body.appendChild(canvas); // 确保在图像加载完成后添加canvas
                 await performOCR(canvas, requestURL, captchaKey);
             } catch (error) {
                 console.error('请求失败:', error);
@@ -88,7 +94,6 @@
                     canvas.width = img.width;
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
-                    document.body.appendChild(canvas);
                     URL.revokeObjectURL(svgUrl);
                     resolve(canvas);
                 };
