@@ -42,7 +42,7 @@
         }
     </style>
     <script src="https://cdn.bootcdn.net/ajax/libs/tesseract.js/6.0.0/tesseract.min.js"></script>
-   <!--<script src="https://ghproxy.cc/https://raw.githubusercontent.com/masgzy/masgzy.github.io/main/douyin/opencv.js"></script>-->
+   <script src="https://ghproxy.cc/https://raw.githubusercontent.com/masgzy/masgzy.github.io/main/douyin/opencv.js"></script>
 </head>
 <body>
     <div class="container">
@@ -58,8 +58,8 @@
     </div>
     <script>
                 // 动态加载 OpenCV.js
-                var script = document.createElement('script');
-                script.src = 'https://ghproxy.cc/https://raw.githubusercontent.com/masgzy/masgzy.github.io/main/douyin/opencv.js'; // 确保 opencv.js 在您的服务器上可访问
+                //var script = document.createElement('script');
+                //script.src = 'https://ghproxy.cc/https://raw.githubusercontent.com/masgzy/masgzy.github.io/main/douyin/opencv.js'; // 确保 opencv.js 在您的服务器上可访问
                 script.onload = function() {
                     // 检测 OpenCV 是否成功加载
                     if (typeof cv !== 'undefined' && typeof cv.imread === 'function') {
