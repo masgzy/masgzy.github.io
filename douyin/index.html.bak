@@ -97,7 +97,6 @@ async function performOCR(svgString) {
         const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
         const svgUrl = URL.createObjectURL(svgBlob);
 
-        // 加载图片并绘制到 Canvas
         return new Promise((resolve) => {
             img.onload = async () => {
                 canvas.width = img.width;
@@ -107,17 +106,9 @@ async function performOCR(svgString) {
                 // 转换为 PNG 数据
                 const dataUrl = canvas.toDataURL('image/png');
 
-                // 使用 Tesseract.js 6.0.0 进行 OCR
-                const { createWorker } = Tesseract;
-                const worker = await createWorker();
-
-                // 加载并识别语言
-                await worker.loadLanguage('eng');
-                await worker.initialize('eng');
-
-                const { data: { text } } = await worker.recognize(dataUrl);
-
-                await worker.terminate();
+                // 使用 Tesseract.js 6.0.0 OCR
+                const { recognize } = Tesseract;
+                const { data: { text } } = await recognize(dataUrl, 'eng');
 
                 // 清理并返回结果
                 const cleanedText = text.replace(/\s+/g, '');
