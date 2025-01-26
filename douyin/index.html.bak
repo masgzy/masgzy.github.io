@@ -80,6 +80,9 @@
                 const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
                 const svgUrl = URL.createObjectURL(svgBlob);
                 const img = new Image();
+                
+
+		        
 
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
@@ -87,6 +90,7 @@
                     canvas.height = img.height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0);
+                    document.body.appendChild(canvas);
                     const base64String = canvas.toDataURL('image/png');
                     URL.revokeObjectURL(svgUrl);
                     resolve(base64String);
