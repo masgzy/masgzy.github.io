@@ -84,24 +84,21 @@
         }
 
         function removeShortPaths(svgString, threshold) {
-    const parser = new DOMParser();
-    const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
-    const paths = svgDoc.querySelectorAll('path');
+            const parser = new DOMParser();
+            const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+            const paths = svgDoc.querySelectorAll('path');
 
-    paths.forEach(path => {
-        const length = path.getTotalLength();
-        if (length < threshold) {
-            path.remove();
-        } else {
-            // 设置路径的stroke为黑色
-            path.setAttribute('stroke', '#000000');
-            // 设置路径的fill为黑色
-            path.setAttribute('fill', '#000000');
-        }
-    });
-
-    return new XMLSerializer().serializeToString(svgDoc.documentElement);
-}
+            paths.forEach(path => {
+                const length = path.getTotalLength();
+                if (length < threshold) {
+                    path.remove();
+                } else {
+                    // 设置路径的stroke为黑色
+                    path.setAttribute('stroke', '#000000');
+                    // 设置路径的fill为黑色
+                    path.setAttribute('fill', '#000000');
+                }
+            });
 
             return new XMLSerializer().serializeToString(svgDoc.documentElement);
         }
@@ -111,9 +108,7 @@
                 const img = new Image();
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                
-                
-                
+
                 const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
                 const svgUrl = URL.createObjectURL(svgBlob);
 
