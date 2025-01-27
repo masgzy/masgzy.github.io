@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>视频解析工具</title>
+    <!-- 使用指定的jQuery源 -->
+    <script src="https://static.qiantucdn.com/assets/components/jquery-3.7.1.min.js"></script>
     <style>
         :root {
             --primary-color: #2196F3;
@@ -244,8 +246,8 @@
         <div class="input-group">
             <input type="text" id="urlInput" placeholder="请输入抖音、快手等视频链接" enterkeyhint="go">
             <div class="btn-group">
-                <button class="btn btn-primary" onclick="parseVideo()" id="parseBtn">解析视频</button>
-                <button class="btn btn-danger" onclick="clearAll()" id="clearBtn" style="display: none;">清空</button>
+                <button class="btn btn-primary" id="parseBtn">解析视频</button>
+                <button class="btn btn-danger" id="clearBtn" style="display: none;">清空</button>
             </div>
         </div>
         
@@ -253,7 +255,7 @@
         
         <div class="result" id="result">
             <div class="video-info">
-                <img class="cover" id="coverImg" src="" alt="视频封面" onerror="this.style.display='none'">
+                <img class="cover" id="coverImg" src="" alt="视频封面">
                 <h2 class="video-title" id="videoTitle"></h2>
             </div>
             
@@ -288,176 +290,173 @@
         // 代理服务器配置
         const PROXY_SERVERS = [
             'https://corsproxy.io/?',
-            'https://api.allorigins.win/raw?url=',
-            'https://cors-anywhere.herokuapp.com/'
-        ]
-        let currentProxyIndex = 0
+            'https://api.allorigins.win/get?url=',
+            'https://thingproxy.freeboard.io/fetch/'
+        ];
+        let currentProxyIndex = 0;
 
-        document.getElementById('urlInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') parseVideo()
-        })
+        $(document).ready(function() {
+            // 绑定事件
+            $('#urlInput').keypress(function(e) {
+                if (e.which === 13) parseVideo();
+            });
 
-        async function parseVideo() {
-            const urlInput = document.getElementById('urlInput')
-            const parseBtn = document.getElementById('parseBtn')
-            const resultDiv = document.getElementById('result')
-            const errorMsg = document.getElementById('errorMsg')
-            const clearBtn = document.getElementById('clearBtn')
+            $('#parseBtn').click(parseVideo);
+            $('#clearBtn').click(clearAll);
+        });
+
+        function parseVideo() {
+            const $urlInput = $('#urlInput');
+            const $parseBtn = $('#parseBtn');
+            const videoUrl = $urlInput.val().trim();
 
             // 重置状态
-            resultDiv.classList.remove('show')
-            errorMsg.style.display = 'none'
-            urlInput.blur()
-            parseBtn.disabled = true
+            $('#result').removeClass('show');
+            $('#errorMsg').hide();
+            $parseBtn.prop('disabled', true);
 
-            // 输入验证
-            const videoUrl = urlInput.value.trim()
             if (!videoUrl) {
-                showError('请输入有效的视频链接')
-                parseBtn.disabled = false
-                return
+                showError('请输入有效的视频链接');
+                $parseBtn.prop('disabled', false);
+                return;
             }
 
-            try {
-                // 显示加载状态
-                parseBtn.innerHTML = '🔄 解析中<span class="loading"></span>'
+            // 显示加载状态
+            $parseBtn.html('🔄 解析中<span class="loading"></span>');
 
-                // 构造请求URL
-                const apiUrl = getProxyUrl(`https://api.yyy001.com/api/videoparse?url=${encodeURIComponent(videoUrl)}`)
+            // 构造请求URL
+            const apiUrl = getProxyUrl(`https://api.yyy001.com/api/videoparse?url=${encodeURIComponent(videoUrl)}`);
+
+            // 发送请求
+            $.ajax({
+                url: apiUrl,
+                method: 'GET',
+                dataType: 'json',
+                timeout: 15000,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .done(function(response) {
+                // 处理代理包装的响应
+                const data = response.contents ? JSON.parse(response.contents) : response;
                 
-                // 请求配置
-                const controller = new AbortController()
-                const timeoutId = setTimeout(() => controller.abort(), 15000)
-
-                // 发送请求
-                const response = await fetch(apiUrl, {
-                    signal: controller.signal,
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                }).finally(() => {
-                    clearTimeout(timeoutId)
-                    parseBtn.disabled = false
-                })
-
-                // 处理HTTP错误
-                if (!response.ok) {
-                    const errorText = await response.text()
-                    throw new Error(`[${response.status}] ${errorText.slice(0, 80)}`)
+                if (!data.success) {
+                    throw new Error(data.message || 'API返回错误');
                 }
 
-                // 验证响应格式
-                const contentType = response.headers.get('content-type')
-                if (!contentType?.includes('application/json')) {
-                    const text = await response.text()
-                    console.warn('非JSON响应:', text)
-                    throw new Error('服务器返回了无效的响应格式')
-                }
-
-                // 解析数据
-                const data = await response.json()
-                console.debug('API响应:', data)
-
-                // 验证数据结构
-                if (!data?.success || !data.data?.play_url) {
-                    throw new Error(data?.message || '无效的API响应结构')
-                }
-
-                // 更新界面
-                updateUI(data)
-                resultDiv.classList.add('show')
-                clearBtn.style.display = 'inline-block'
-
-            } catch (error) {
-                console.error('请求失败:', error)
-                handleNetworkError(error)
-            } finally {
-                parseBtn.innerHTML = '解析视频'
-            }
+                updateUI(data);
+                $('#result').addClass('show');
+                $('#clearBtn').show();
+            })
+            .fail(function(jqXHR, textStatus, errorThrown) {
+                handleAjaxError(jqXHR, textStatus, errorThrown);
+            })
+            .always(function() {
+                $parseBtn.html('解析视频').prop('disabled', false);
+            });
         }
 
         function getProxyUrl(url) {
-            return PROXY_SERVERS[currentProxyIndex] + encodeURIComponent(url)
+            const proxy = PROXY_SERVERS[currentProxyIndex];
+            if (proxy.includes('allorigins.win')) {
+                return proxy + encodeURIComponent(url);
+            }
+            return proxy + url;
+        }
+
+        function handleAjaxError(jqXHR, textStatus, errorThrown) {
+            let errorMessage = '请求失败';
+            
+            switch(textStatus) {
+                case 'timeout':
+                    errorMessage = '请求超时，请重试';
+                    break;
+                case 'parsererror':
+                    errorMessage = '响应解析失败';
+                    try {
+                        const responseText = jqXHR.responseText;
+                        console.error('原始错误响应:', responseText);
+                        if (/CORS|Access-Control-Allow-Origin/i.test(responseText)) {
+                            rotateProxy();
+                            errorMessage += '，已切换代理';
+                        }
+                    } catch(e) {}
+                    break;
+                case 'error':
+                    if (jqXHR.status === 0) {
+                        errorMessage = '网络连接失败';
+                        rotateProxy();
+                    } else {
+                        errorMessage = `服务器错误: ${jqXHR.status} ${errorThrown}`;
+                    }
+                    break;
+            }
+            
+            showError(errorMessage);
+            console.error('AJAX错误:', textStatus, errorThrown);
+        }
+
+        function rotateProxy() {
+            currentProxyIndex = (currentProxyIndex + 1) % PROXY_SERVERS.length;
+            console.log('切换到代理:', PROXY_SERVERS[currentProxyIndex]);
         }
 
         function updateUI(data) {
             // 封面处理
-            const coverImg = document.getElementById('coverImg')
+            const $coverImg = $('#coverImg');
             if (data.data.cover) {
-                coverImg.style.display = 'block'
-                coverImg.src = data.data.cover
+                $coverImg.attr('src', data.data.cover).show();
             } else {
-                coverImg.style.display = 'none'
+                $coverImg.hide();
             }
 
             // 视频信息
-            document.getElementById('videoTitle').textContent = data.data.title || '未知标题'
-            document.getElementById('time').textContent = `响应时间: ${data.time || '未知'}`
+            $('#videoTitle').text(data.data.title || '未知标题');
+            $('#time').text(`响应时间: ${data.time || '未知'}`);
 
             // 视频播放器
-            const videoSource = document.getElementById('videoPlayer').querySelector('source')
-            videoSource.src = data.data.play_url
-            document.getElementById('videoPlayer').load()
+            const $video = $('#videoPlayer');
+            $video.find('source').attr('src', data.data.play_url);
+            $video[0].load();
 
             // 链接处理
-            const setLink = (id, url) => {
-                const element = document.getElementById(id)
-                element.textContent = url
-                element.parentElement.style.display = url ? 'block' : 'none'
-            }
+            const updateLink = function(selector, url) {
+                const $element = $(selector);
+                $element.text(url);
+                $element.parent().toggle(url !== undefined && url !== '');
+            };
 
-            setLink('playUrl', data.data.play_url)
-            setLink('downloadUrl', data.data.url)
-            setLink('coverUrl', data.data.cover)
+            updateLink('#playUrl', data.data.play_url);
+            updateLink('#downloadUrl', data.data.url);
+            updateLink('#coverUrl', data.data.cover);
 
             // 按钮链接
-            document.getElementById('playBtn').href = data.data.play_url || '#'
-            document.getElementById('downloadBtn').href = data.data.url || '#'
-            document.getElementById('coverBtn').href = data.data.cover || '#'
-        }
-
-        function handleNetworkError(error) {
-            let errorMessage = '请求失败，请重试'
-            
-            if (error.name === 'AbortError') {
-                errorMessage = '请求超时，请检查网络连接'
-            } else if (error.message.includes('Failed to fetch')) {
-                errorMessage = '网络连接失败'
-                currentProxyIndex = (currentProxyIndex + 1) % PROXY_SERVERS.length
-            } else if (error.message.includes('CORS')) {
-                errorMessage = '跨域请求被阻止，已切换代理'
-                currentProxyIndex = (currentProxyIndex + 1) % PROXY_SERVERS.length
-            } else {
-                errorMessage = error.message
-            }
-
-            showError(errorMessage)
+            $('#playBtn').attr('href', data.data.play_url || '#');
+            $('#downloadBtn').attr('href', data.data.url || '#');
+            $('#coverBtn').attr('href', data.data.cover || '#');
         }
 
         function showError(message) {
-            const errorMsg = document.getElementById('errorMsg')
-            errorMsg.textContent = message
-            errorMsg.style.display = 'block'
+            $('#errorMsg').text(message).show();
         }
 
         function clearAll() {
-            document.getElementById('urlInput').value = ''
-            document.getElementById('result').classList.remove('show')
-            document.getElementById('errorMsg').style.display = 'none'
-            document.getElementById('clearBtn').style.display = 'none'
+            $('#urlInput').val('');
+            $('#result').removeClass('show');
+            $('#errorMsg').hide();
+            $('#clearBtn').hide();
             
-            // 重置所有内容
-            document.getElementById('coverImg').src = ''
-            document.getElementById('videoTitle').textContent = ''
-            document.getElementById('videoPlayer').querySelector('source').src = ''
-            document.getElementById('videoPlayer').load()
+            $('#coverImg').attr('src', '').hide();
+            $('#videoTitle').text('');
+            $('#videoPlayer source').attr('src', '');
+            $('#videoPlayer')[0].load();
             
-            ['playUrl', 'downloadUrl', 'coverUrl'].forEach(id => {
-                document.getElementById(id).textContent = ''
-            })
+            ['#playUrl', '#downloadUrl', '#coverUrl'].forEach(selector => {
+                $(selector).text('').parent().hide();
+            });
             
-            document.getElementById('time').textContent = ''
+            $('#time').text('');
         }
     </script>
 </body>
