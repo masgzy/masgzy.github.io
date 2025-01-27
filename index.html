@@ -85,6 +85,12 @@
   display: block;
   margin: 0 auto;
 }
+/* 将链接变为按钮样式 */
+a.btn {
+  display: inline-block; /* 或 block */
+  text-decoration: none;
+  text-align: center;
+}
     </style>
 </head>
 <body>
@@ -95,7 +101,7 @@
             <ul id="fileList"></ul>
         </div>
     </div>
-    <button class="btn center-block"><a href="/video/"></a>视频解析</button>
+    <a href="/video/" class="btn full-width">视频解析</a>
     <script>
         // 定义文件数组
         const files = [
