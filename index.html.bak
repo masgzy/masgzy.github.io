@@ -95,7 +95,7 @@
             <ul id="fileList"></ul>
         </div>
     </div>
-    <button class="btn center-block"><a href="/video/"></a>视频解析</button>
+    <button class="btn center-block"><a href=/video></a>视频解析</button>
     <script>
         // 定义文件数组
         const files = [
