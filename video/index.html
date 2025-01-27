@@ -27,8 +27,9 @@
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 20px 15px;
             margin-bottom: 20px;
+            overflow: hidden;
         }
 
         .input-group {
@@ -39,12 +40,22 @@
         }
 
         input {
-            width: 100%;
+            width: calc(100% - 4px);
             padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 16px;
             -webkit-appearance: none;
+            box-sizing: border-box;
+            background: #fcfcfc;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            background: white;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
         }
 
         .btn-group {
@@ -148,11 +159,6 @@
             gap: 8px;
         }
 
-        .btn-link svg {
-            width: 18px;
-            height: 18px;
-        }
-
         .time {
             color: #757575;
             font-size: 0.85em;
@@ -170,8 +176,8 @@
         }
 
         @media (min-width: 768px) {
-            body {
-                padding: 30px;
+            .container {
+                padding: 25px;
             }
             
             .input-group {
@@ -196,6 +202,24 @@
                 font-size: 1.5em;
             }
         }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 12px;
+                border-radius: 10px;
+            }
+            
+            input {
+                font-size: 15px;
+                padding: 10px 12px;
+                border-width: 1.5px;
+            }
+            
+            .btn {
+                min-width: 100px;
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -212,12 +236,13 @@
         
         <div class="result" id="result">
             <div class="video-info">
-                <img class="cover" id="coverImg" src="" alt="视频封面">
+                <img class="cover" id="coverImg" src="" alt="视频封面" onerror="this.style.display='none'">
                 <h2 class="video-title" id="videoTitle"></h2>
             </div>
             
             <video id="videoPlayer" controls playsinline>
                 <source src="" type="video/mp4">
+                您的浏览器不支持视频播放
             </video>
             
             <div class="links">
@@ -228,22 +253,13 @@
             
             <div class="button-group">
                 <a href="#" class="btn btn-link" id="playBtn" target="_blank">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    播放
+                    ▶️ 播放
                 </a>
                 <a href="#" class="btn btn-link" id="downloadBtn" target="_blank">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                    </svg>
-                    下载
+                    ⬇️ 下载
                 </a>
                 <a href="#" class="btn btn-link" id="coverBtn" target="_blank">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                    </svg>
-                    封面
+                    🖼️ 封面
                 </a>
             </div>
             
@@ -252,7 +268,6 @@
     </div>
 
     <script>
-        // 回车键支持
         document.getElementById('urlInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') parseVideo()
         })
@@ -263,50 +278,96 @@
             const errorMsg = document.getElementById('errorMsg')
             const clearBtn = document.getElementById('clearBtn')
 
+            // 重置状态
             resultDiv.classList.remove('show')
             errorMsg.style.display = 'none'
             urlInput.blur()
 
-            if (!urlInput.value.trim()) {
-                errorMsg.textContent = '请输入有效的视频链接'
-                errorMsg.style.display = 'block'
+            // 输入验证
+            const videoUrl = urlInput.value.trim()
+            if (!videoUrl) {
+                showError('请输入有效的视频链接')
                 return
             }
 
             try {
-                const response = await fetch(`https://api.yyy001.com/api/videoparse?url=${encodeURIComponent(urlInput.value)}`)
-                const data = await response.json()
+                // 添加请求状态指示
+                const originalButtonText = document.querySelector('.btn-primary').innerHTML
+                document.querySelector('.btn-primary').innerHTML = '解析中...'
 
-                document.getElementById('time').textContent = `响应时间: ${data.time}`
+                // 发送请求
+                const response = await fetch(`https://api.yyy001.com/api/videoparse?url=${encodeURIComponent(videoUrl)}`)
+                
+                // 恢复按钮状态
+                document.querySelector('.btn-primary').innerHTML = originalButtonText
 
-                if (data.success) {
-                    // 更新内容
-                    document.getElementById('coverImg').src = data.data.cover
-                    document.getElementById('videoTitle').textContent = data.data.title
-                    const videoSource = document.getElementById('videoPlayer').querySelector('source')
-                    videoSource.src = data.data.play_url
-                    document.getElementById('videoPlayer').load()
-                    
-                    // 更新链接
-                    document.getElementById('playUrl').textContent = data.data.play_url
-                    document.getElementById('downloadUrl').textContent = data.data.url
-                    document.getElementById('coverUrl').textContent = data.data.cover
-
-                    // 更新按钮链接
-                    document.getElementById('playBtn').href = data.data.play_url
-                    document.getElementById('downloadBtn').href = data.data.url
-                    document.getElementById('coverBtn').href = data.data.cover
-
-                    resultDiv.classList.add('show')
-                    clearBtn.style.display = 'inline-block'
-                } else {
-                    errorMsg.textContent = `错误: ${data.message}`
-                    errorMsg.style.display = 'block'
+                // 处理HTTP错误状态
+                if (!response.ok) {
+                    throw new Error(`请求失败 (HTTP ${response.status})`)
                 }
+
+                // 处理响应数据
+                const responseText = await response.text()
+                console.log('原始响应:', responseText) // 调试用
+                const data = JSON.parse(responseText)
+
+                // 处理业务逻辑错误
+                if (!data.success) {
+                    throw new Error(data.message || '未知错误')
+                }
+
+                // 更新界面
+                updateUI(data)
+                resultDiv.classList.add('show')
+                clearBtn.style.display = 'inline-block'
+
             } catch (error) {
-                errorMsg.textContent = '请求失败，请检查网络连接'
-                errorMsg.style.display = 'block'
+                console.error('解析错误:', error)
+                showError(`操作失败: ${error.message}`)
+                document.querySelector('.btn-primary').innerHTML = '解析视频'
             }
+        }
+
+        function updateUI(data) {
+            // 封面图片处理
+            const coverImg = document.getElementById('coverImg')
+            if (data.data.cover) {
+                coverImg.style.display = 'block'
+                coverImg.src = data.data.cover
+            } else {
+                coverImg.style.display = 'none'
+            }
+
+            // 视频信息更新
+            document.getElementById('videoTitle').textContent = data.data.title || '未知标题'
+            document.getElementById('time').textContent = `响应时间: ${data.time}`
+
+            // 视频播放器处理
+            const videoSource = document.getElementById('videoPlayer').querySelector('source')
+            videoSource.src = data.data.play_url
+            document.getElementById('videoPlayer').load()
+
+            // 链接处理
+            const setLink = (id, url) => {
+                const element = document.getElementById(id)
+                element.textContent = url
+                element.parentElement.style.display = url ? 'block' : 'none'
+            }
+
+            setLink('playUrl', data.data.play_url)
+            setLink('downloadUrl', data.data.url)
+            setLink('coverUrl', data.data.cover)
+
+            // 按钮链接处理
+            document.getElementById('playBtn').href = data.data.play_url || '#'
+            document.getElementById('downloadBtn').href = data.data.url || '#'
+            document.getElementById('coverBtn').href = data.data.cover || '#'
+        }
+
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMsg')
+            errorMsg.textContent = message
+            errorMsg.style.display = 'block'
         }
 
         function clearAll() {
@@ -315,14 +376,16 @@
             document.getElementById('errorMsg').style.display = 'none'
             document.getElementById('clearBtn').style.display = 'none'
             
-            // 重置内容
+            // 重置所有内容
             document.getElementById('coverImg').src = ''
             document.getElementById('videoTitle').textContent = ''
             document.getElementById('videoPlayer').querySelector('source').src = ''
             document.getElementById('videoPlayer').load()
-            document.getElementById('playUrl').textContent = ''
-            document.getElementById('downloadUrl').textContent = ''
-            document.getElementById('coverUrl').textContent = ''
+            
+            ['playUrl', 'downloadUrl', 'coverUrl'].forEach(id => {
+                document.getElementById(id).textContent = ''
+            })
+            
             document.getElementById('time').textContent = ''
         }
     </script>
