@@ -120,7 +120,7 @@
             <ul id="fileList"></ul>
         </div>
 
-        <!--<a href="/video/" class="btn">视频解析服务</a>-->
+        <a href="/video/" class="btn">视频解析服务</a>
     </div>
 
     <script>
