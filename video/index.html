@@ -243,7 +243,7 @@
 <body>
     <div class="container">
         <div class="input-group">
-            <input type="text" id="urlInput" placeholder="请输入抖音、快手等视频链接" enterkeyhint="go">
+            <input type="text" id="urlInput" placeholder="粘贴任意包含视频链接的内容（支持抖音、快手等）" enterkeyhint="go">
             <div class="btn-group">
                 <button class="btn btn-primary" id="parseBtn">解析视频</button>
                 <button class="btn btn-danger" id="clearBtn" style="display: none;">清空</button>
@@ -287,6 +287,7 @@
 
     <script>
         $(document).ready(function() {
+            // 绑定事件
             $('#urlInput').keypress(function(e) {
                 if (e.which === 13) parseVideo();
             });
@@ -298,22 +299,34 @@
         function parseVideo() {
             const $urlInput = $('#urlInput');
             const $parseBtn = $('#parseBtn');
-            const videoUrl = $urlInput.val().trim();
+            const rawText = $urlInput.val().trim();
 
+            // 重置状态
             $('#result').removeClass('show');
             $('#errorMsg').hide();
             $parseBtn.prop('disabled', true);
 
-            if (!isValidUrl(videoUrl)) {
-                showError('请输入有效的视频链接');
+            // 提取有效链接
+            const extractedUrls = extractUrls(rawText);
+            if (extractedUrls.length === 0) {
+                showError('未检测到有效视频链接！请确认输入包含 http:// 或 https:// 开头的URL');
                 $parseBtn.prop('disabled', false);
                 return;
             }
 
+            const videoUrl = extractedUrls[0];
+            if (!isValidUrl(videoUrl)) {
+                showError('提取到无效链接：' + videoUrl);
+                $parseBtn.prop('disabled', false);
+                return;
+            }
+
+            // 显示加载状态
             $parseBtn.html('🔄 解析中<span class="loading"></span>');
 
+            // 发送请求
             $.ajax({
-                url: `https://api.yyy001.com/api/videoparse`,
+                url: 'https://api.yyy001.com/api/videoparse',
                 method: 'GET',
                 data: { url: videoUrl },
                 dataType: 'json',
@@ -325,9 +338,9 @@
             .done(function(data) {
                 if (!data.success) {
                     if (data.error?.code === 403) {
-                        throw new Error('拒绝请求');
+                        throw new Error('拒绝请求：服务器拒绝处理该链接');
                     }
-                    throw new Error(data.message || 'API返回错误');
+                    throw new Error(data.message || 'API返回未知错误');
                 }
                 updateUI(data);
                 $('#result').addClass('show');
@@ -341,57 +354,84 @@
             });
         }
 
+        // 提取URL函数
+        function extractUrls(text) {
+            const urlRegex = /https?:\/\/[^\s<>{}\[\]"'”’]+/gi;
+            const matches = text.match(urlRegex) || [];
+            return matches.filter(url => {
+                try {
+                    new URL(url);
+                    return true;
+                } catch {
+                    return false;
+                }
+            });
+        }
+
+        // URL验证函数
         function isValidUrl(url) {
             try {
-                return Boolean(new URL(url));
+                new URL(url);
+                return true;
             } catch {
                 return false;
             }
         }
 
+        // 错误处理函数
         function handleAjaxError(jqXHR, textStatus, errorThrown) {
             let errorMessage = '请求失败';
             
             switch(true) {
                 case textStatus === 'timeout':
-                    errorMessage = '请求超时，请检查网络后重试';
+                    errorMessage = '请求超时，请检查网络连接后重试';
                     break;
                 case textStatus === 'parsererror':
-                    errorMessage = '响应解析失败，可能服务器返回了错误格式';
+                    errorMessage = '响应解析失败，服务器返回了无效数据';
                     break;
                 case jqXHR.status === 403:
                     errorMessage = '拒绝请求：服务器拒绝处理该请求';
                     break;
                 case jqXHR.status === 0:
-                    errorMessage = '网络连接异常，请检查：<br>1. 网络连接状态<br>2. 浏览器扩展限制<br>3. 跨域访问限制';
+                    errorMessage = '网络连接失败，可能原因：<br>1. 网络未连接<br>2. 浏览器扩展拦截<br>3. CORS跨域限制';
                     break;
                 case jqXHR.status >= 500:
-                    errorMessage = `服务器内部错误（${jqXHR.status}）`;
+                    errorMessage = `服务器错误（${jqXHR.status}）`;
                     break;
                 default:
                     errorMessage = `请求失败：${errorThrown || '未知错误'}`;
             }
 
+            // 添加详细错误信息
             if (jqXHR.responseJSON?.error) {
-                errorMessage += `<br>错误代码: ${jqXHR.responseJSON.error.code}`;
-                errorMessage += `<br>详细信息: ${jqXHR.responseJSON.error.message}`;
+                errorMessage += `<br>错误代码：${jqXHR.responseJSON.error.code}`;
+                errorMessage += `<br>详细信息：${jqXHR.responseJSON.error.message}`;
             }
 
             showError(errorMessage);
-            console.error('请求详情:', jqXHR, textStatus, errorThrown);
+            console.error('请求详情：', jqXHR, textStatus, errorThrown);
         }
 
+        // 更新界面
         function updateUI(data) {
+            // 封面处理
             const $coverImg = $('#coverImg');
-            data.data.cover ? $coverImg.attr('src', data.data.cover).show() : $coverImg.hide();
+            if (data.data.cover) {
+                $coverImg.attr('src', data.data.cover).show();
+            } else {
+                $coverImg.hide();
+            }
 
-            $('#videoTitle').text(data.data.title || '未知标题');
-            $('#time').text(`响应时间: ${data.time || '未知'}`);
+            // 视频信息
+            $('#videoTitle').text(data.data.title || '未获取到视频标题');
+            $('#time').text(`解析时间：${data.time || '未知'}`);
 
+            // 视频播放器
             const $video = $('#videoPlayer');
             $video.find('source').attr('src', data.data.play_url);
             $video[0].load();
 
+            // 更新链接
             const updateLink = (selector, url) => {
                 const $element = $(selector);
                 $element.text(url);
@@ -402,26 +442,31 @@
             updateLink('#downloadUrl', data.data.url);
             updateLink('#coverUrl', data.data.cover);
 
+            // 更新按钮链接
             $('#playBtn').attr('href', data.data.play_url || '#');
             $('#downloadBtn').attr('href', data.data.url || '#');
             $('#coverBtn').attr('href', data.data.cover || '#');
         }
 
+        // 显示错误信息
         function showError(message) {
-            $('#errorMsg').html(message).show().delay(5000).fadeOut();
+            $('#errorMsg').html(message).show().delay(5000).fadeOut(400);
         }
 
+        // 清空功能
         function clearAll() {
             $('#urlInput').val('');
             $('#result').removeClass('show');
             $('#errorMsg').hide();
             $('#clearBtn').hide();
             
+            // 重置视频信息
             $('#coverImg').attr('src', '').hide();
             $('#videoTitle').text('');
             $('#videoPlayer source').attr('src', '');
             $('#videoPlayer')[0].load();
             
+            // 清除链接显示
             ['#playUrl', '#downloadUrl', '#coverUrl'].forEach(selector => {
                 $(selector).text('').parent().hide();
             });
