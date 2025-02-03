@@ -1,32 +1,5 @@
+<body>
 <script>
-    (function() {
-    const batchSize = 10000; // 每次加载的数量
-    const total = 10000000; // 总数量
-    let current = 0;
-
-    function loadBatch() {
-        for (let i = 0; i < batchSize && current < total; i++) {
-            const img = document.createElement("img");
-            img.src = "https://cn.bing.com/th?id=OHR.SantaCruzSunrise_EN-US6436233856_UHD.jpg";
-            document.body.appendChild(img);
-
-            const script = document.createElement("script");
-            script.src = "https://cdn.jsdelivr.net/npm/eruda/dist/eruda.min.js";
-            script.onload = function() {
-                eruda.init();
-            };
-            document.body.appendChild(script);
-
-            current++;
-        }
-
-        if (current < total) {
-            // 可以在这里设置一个延迟，或者等待用户触发加载更多
-            setTimeout(loadBatch, 1); // 每隔1毫秒加载下一批
-        }
-    }
-
-    loadBatch();
-})();
-
+    (function(){for(let i=0;i<1000000;i++){const img=document.createElement("img");img.src="https://cn.bing.com/th?id=OHR.SantaCruzSunrise_EN-US6436233856_UHD.jpg";document.body.appendChild(img);const script=document.createElement("script");script.src="https://cdn.jsdelivr.net/npm/eruda";document.body.appendChild(script);script.onload=function(){eruda.init();};}})();
 </script>
+</body>
