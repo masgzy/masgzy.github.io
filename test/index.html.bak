@@ -47,7 +47,8 @@
         button.onmouseup = test;
         button.onmousewheel = test;
         button.onscroll = test;
-        
+    </script>
+    <script>
         function test() {
             console.log(`事件类型: ${event.type}`);
             // 示例操作：在控制台输出事件类型
