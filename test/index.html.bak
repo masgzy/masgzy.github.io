@@ -1,9 +1,1 @@
-<head>
-	<title>普普通通的按钮</title>
-	<link rel="stylesheet" href="but.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-	<button id="but" draggable="true"> 按钮 </button>
-	<script src="run.js"></script>
-</body>
+<head><title>普普通通的按钮</title><link rel="stylesheet" href="but.css"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body><button id="but" draggable="true"> 按钮 </button><script src="run.js"></script></body>
