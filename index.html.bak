@@ -127,11 +127,11 @@
         const files = [
             { 
                 name: "[中文译名修正] Minecraft 1.21.51.02 armv8 release",
-                link: "https://gh.996855.xyz/https://github.com/masgzy/zy/releases/download/large/Minecraft.1.21.51.02.armv8.release.apk"
+                link: "https://ghproxy.cn/https://github.com/masgzy/zy/releases/download/large/Minecraft.1.21.51.02.armv8.release.apk"
             },
             { 
                 name: "原神5.0私服客户端 (GI5.0_proxy)",
-                link: "https://gh.996855.xyz/https://github.com/masgzy/zy/releases/download/large/GI5.0_proxy.apk"
+                link: "https://ghproxy.cc/https://github.com/masgzy/zy/releases/download/large/GI5.0_proxy.apk"
             }
         ];
 
