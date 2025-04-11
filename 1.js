@@ -1,58 +1,31 @@
+// 全屏与缩放函数（网页4、6的全屏事件监听）
 function enterFullScreen() {
-  // 创建一个隐藏的按钮并模拟点击
-  const fullScreenButton = document.createElement("button");
-  fullScreenButton.style.display = "none";
-  document.body.appendChild(fullScreenButton);
+  const docEl = document.documentElement;
+  const requestFS = docEl.requestFullscreen || docEl.webkitRequestFullscreen;
+  
+  if (requestFS) {
+    requestFS.call(docEl).then(() => {
+      // 执行缩放（网页3的京东案例动画延迟逻辑）
+      document.body.style.zoom = '80%';
+      
+      // 延迟1秒后执行Canvas和Div调整（网页5的异步操作优化）
+      setTimeout(() => {
+        // 强制重绘触发（网页3的渲染机制）
+        const canvas = document.querySelector('canvas[uri_prefix="libs/chem/"]');
+        const div = document.querySelector('.ScrollBar___1sQ2U');
+        
+        canvas.setAttribute('height', '1268');
+        canvas.setAttribute('width', '2818');
+        canvas.style.height = '400px';
+        canvas.style.width = '888px';
+        void canvas.offsetHeight; // 强制Canvas重绘
 
-  // 绑定点击事件
-  fullScreenButton.addEventListener("click", () => {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen()
-        .catch((err) => {
-          console.error("无法进入全屏模式", err);
-        });
-    } else if (document.documentElement.mozRequestFullScreen) {
-      document.documentElement.mozRequestFullScreen();
-    } else if (document.documentElement.webkitRequestFullscreen) {
-      document.documentElement.webkitRequestFullscreen();
-    } else if (document.documentElement.msRequestFullscreen) {
-      document.documentElement.msRequestFullscreen();
-    }
-  });
-
-  // 模拟点击
-  fullScreenButton.click();
-
-  // 移除按钮
-  document.body.removeChild(fullScreenButton);
+        div.style.maxHeight = '344px';
+        void div.offsetHeight;    // 强制Div重绘
+      }, 1000); // 关键延迟
+    });
+  }
 }
 
-// 直接调用
+// 初始化执行
 enterFullScreen();
-
-
-function scalePage(scaleFactor) {
-  document.body.style.zoom = scaleFactor * 100 + '%';
-}
-
-// 缩小页面
-scalePage(0.8); // 缩小到 80%
-
-// 获取canvas元素
-var canvas = document.querySelector('canvas[uri_prefix="libs/chem/"]');
-
-// 修改height属性
-canvas.setAttribute('height', '1318');
-canvas.setAttribute('width', '2930');
-
-// 修改style中的height
-canvas.style.height = '450px';
-canvas.style.width = '1000px';
-
-
-
-// 获取div元素
-var div = document.querySelector('.ScrollBar___1sQ2U');
-
-// 修改style中的max-height
-div.style.maxHeight = '344px';
