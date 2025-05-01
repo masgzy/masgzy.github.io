@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>全屏视频播放器</title>
+  <title>视频播放器</title>
   <style>
-    /* 设置 HTML 和 BODY 元素占据 100% 视口高度 */
-    html, body {
-      height: 100%;
+    body {
       margin: 0;
       padding: 0;
       min-height: 100vh;
@@ -16,22 +14,18 @@
       font-family: Arial, sans-serif;
     }
 
-    /* iframe 容器 */
     #iframe-container {
       flex: 1;
       width: 100%;
-      height: 100%;
       position: relative;
     }
 
-    /* iframe 全屏显示 */
     iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
 
-    /* 切换按钮样式 */
     .switch-btn {
       position: fixed;
       left: 20px;
@@ -55,7 +49,6 @@
       transform: scale(1.1);
     }
 
-    /* 视频列表样式 */
     .movie-list {
       position: fixed;
       left: 20px;
@@ -81,7 +74,6 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
-    /* 响应式设计 */
     @media (max-width: 768px) {
       .switch-btn {
         left: 10px;
@@ -117,10 +109,9 @@
     const movieList = document.getElementById("movieList");
     const videoFrame = document.getElementById("videoFrame");
 
-    // 加载视频函数
     function loadVideo(videoId) {
-      const fullUrl = `${config.apiURL}${videoId}`;
-      videoFrame.src = fullUrl;
+        const fullUrl = `${config.apiURL}${videoId}`;
+        videoFrame.src = fullUrl;
     }
 
     // 创建视频列表
@@ -153,11 +144,6 @@
         hideMovieList();
       }
     });
-
-    // 隐藏视频列表
-    function hideMovieList() {
-      movieList.style.display = "none";
-    }
 
     // 初始化
     document.addEventListener("DOMContentLoaded", () => {

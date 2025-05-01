@@ -3,67 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>全屏视频播放器</title>
+  <title>视频播放器</title>
   <style>
-    #iframe-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 9999;
-      background: black;
-      display: none;
-      transition: all 0.3s ease;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .fullscreen-btn {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      z-index: 10000;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-  </style>
-  <style>
-    /* 设置 HTML 和 BODY 元素占据 100% 视口高度 */
-    html, body {
-      height: 100%;
+    body {
       margin: 0;
       padding: 0;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       font-family: Arial, sans-serif;
+      background-color: #111;
     }
 
-    /* iframe 容器 */
-    #iframe-container {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
-
-    /* iframe 全屏显示 */
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    /* 切换按钮样式 */
+    /* 视频切换按钮 */
     .switch-btn {
       position: fixed;
       left: 20px;
@@ -87,7 +40,7 @@
       transform: scale(1.1);
     }
 
-    /* 视频列表样式 */
+    /* 视频列表 */
     .movie-list {
       position: fixed;
       left: 20px;
@@ -113,7 +66,7 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
-    /* 响应式设计 */
+    /* 移动端适配 */
     @media (max-width: 768px) {
       .switch-btn {
         left: 10px;
@@ -130,20 +83,7 @@
   </style>
 </head>
 <body>
-  <!-- iframe 容器 -->
-  <div id="iframe-container">
-    <iframe id="videoFrame" src=""></iframe>
-  </div>
-  <button class="fullscreen-btn" onclick="toggleFullscreen()">全屏</button>
 
-  <script>
-    function toggleFullscreen() {
-      const container = document.getElementById('iframe-container');
-      container.style.display = container.style.display === 'none' ? 'block' : 'none';
-    }
-  </script>
-
-    
   <!-- 视频切换按钮 -->
   <button class="switch-btn" id="switchBtn">📁</button>
 
@@ -156,12 +96,11 @@
   <script>
     const switchBtn = document.getElementById("switchBtn");
     const movieList = document.getElementById("movieList");
-    const videoFrame = document.getElementById("videoFrame");
 
-    // 加载视频函数
+    // 点击列表项后跳转
     function loadVideo(videoId) {
       const fullUrl = `${config.apiURL}${videoId}`;
-      videoFrame.src = fullUrl;
+      window.location.href = fullUrl;
     }
 
     // 创建视频列表
@@ -178,7 +117,6 @@
         item.addEventListener("click", e => {
           const index = parseInt(e.target.dataset.index);
           loadVideo(config.movies[index].videoId);
-          hideMovieList();
         });
       });
     }
@@ -195,18 +133,19 @@
       }
     });
 
-    // 隐藏视频列表
-    function hideMovieList() {
-      movieList.style.display = "none";
-    }
-
     // 初始化
     document.addEventListener("DOMContentLoaded", () => {
       createMovieList();
       if (config.movies.length > 0) {
-        loadVideo(config.movies[0].videoId); // 默认加载第一个视频
+        // 默认跳转第一个视频（可选）
+         loadVideo(config.movies[0].videoId);
       }
     });
+
+    // 隐藏列表
+    function hideMovieList() {
+      movieList.style.display = "none";
+    }
   </script>
 </body>
 </html>
