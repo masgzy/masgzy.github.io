@@ -109,11 +109,9 @@
     const movieList = document.getElementById("movieList");
     const videoFrame = document.getElementById("videoFrame");
 
-    // 加载视频（直接拼接 URL）
     function loadVideo(videoId) {
-      // 格式化 API URL（替换 ${id} 为实际视频 ID）
-      const fullUrl = config.apiURL.replace("${id}", videoId);
-      videoFrame.src = fullUrl;
+        const fullUrl = `${config.api}${videoId}`;
+        videoFrame.src = fullUrl;
     }
 
     // 创建视频列表
