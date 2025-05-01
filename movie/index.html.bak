@@ -109,10 +109,10 @@
     const movieList = document.getElementById("movieList");
     const videoFrame = document.getElementById("videoFrame");
 
-function loadVideo(videoId) {
-  const fullUrl = `${config.api}${videoId}`;
-  videoFrame.src = fullUrl;
-}
+    function loadVideo(videoId) {
+        const fullUrl = `${config.api}${videoId}`;
+        videoFrame.src = fullUrl;
+    }
 
     // 创建视频列表
     function createMovieList() {
