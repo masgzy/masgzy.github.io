@@ -96,7 +96,7 @@
     <div class="movie-list" id="movieList"></div>
 
     <!-- 配置文件 -->
-    <script src="res/config.js"></script>
+    <script src="config.js"></script>
 
     <!-- MuiPlayer 脚本 -->
     <script src="https://cdn.jsdelivr.net/npm/mui-player/dist/mui-player.min.js"></script>
