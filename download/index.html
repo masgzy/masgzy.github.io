@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下载页</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin: 0 0 2rem 0;
+            font-size: 2rem;
+        }
+
+        .file-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .file-item {
+            background: #fff;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            transition: transform 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .file-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .download-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 6px;
+            float: right;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .download-link:hover {
+            background: #218838;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+            
+            .download-link {
+                float: none;
+                display: block;
+                margin-top: 10px;
+                text-align: center;
+            }
+            
+            .file-item {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>下载页</h1>
+        
+        <div class="file-list">
+            <ul id="fileList"></ul>
+        </div>
+
+        <!--<a href="/video/" class="btn">视频解析服务</a>-->
+    </div>
+
+    <script>
+        const files = [
+            { 
+                name: "[中文译名修正] Minecraft 1.21.51.02 armv8 release",
+                link: "https://gh-proxy.com/https://github.com/masgzy/zy/releases/download/large/Minecraft.1.21.51.02.armv8.release.apk"
+            },
+            { 
+                name: "原神5.0私服客户端 (GI5.0_proxy)",
+                link: "https://gh-proxy.com/https://github.com/masgzy/zy/releases/download/large/GI5.0_proxy.apk"
+            },
+            { 
+                name: "Delta Chat.apk",
+                link: "https://gh-proxy.com/https://github.com/masgzy/zy/releases/download/large/DeltaChat.apk"
+            }
+        ];
+
+        function generateFileList() {
+            const fileList = document.getElementById('fileList');
+            
+            files.forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+                li.innerHTML = `
+                    <span>${file.name}</span>
+                    <a href="${file.link}" class="download-link" download target="_blank">
+                        立即下载
+                    </a>
+                `;
+                fileList.appendChild(li);
+            });
+        }
+
+        window.onload = generateFileList;
+    </script>
+</body>
+</html>
