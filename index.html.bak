@@ -9,7 +9,7 @@
 <body>
   <div class="container" id="cards-container"></div>
 
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+  <script src="res/config.js"></script>
+  <script src="res/app.js"></script>
 </body>
 </html>
