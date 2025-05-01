@@ -1,0 +1,9 @@
+const cards = [
+  {
+    title: "项目 A",
+    description: "这是项目A的介绍。",
+    imageText: "可选图片",
+    link: "https://example.com/project-a",
+    iconUrl: "icon_a.png"
+  },
+];

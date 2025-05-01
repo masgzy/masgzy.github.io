@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (card.iconUrl) {
       const img = document.createElement("img");
       img.src = card.iconUrl;
-      img.alt = "项目图标";
+      img.alt = "图标";
       img.onclick = (e) => {
         e.stopPropagation(); // 防止多次触发
         window.location.href = card.link;
@@ -41,27 +41,20 @@ document.addEventListener("DOMContentLoaded", () => {
     leftSide.appendChild(title);
     leftSide.appendChild(description);
 
-    // 可选图片
-    const imageContainer = document.createElement("div");
-    if (card.imageUrl) {
-      const image = document.createElement("img");
-      image.className = "card-image";
-      image.src = card.imageUrl;
-      image.alt = "项目图片";
-      image.onclick = () => window.location.href = card.link;
-      imageContainer.appendChild(image);
-    }
+    // 右侧按钮
+    const rightSide = document.createElement("div");
+    rightSide.className = "card-right";
 
-    // 按钮
     const button = document.createElement("button");
     button.className = "card-button";
     button.textContent = "点击跳转";
     button.onclick = () => window.location.href = card.link;
 
+    rightSide.appendChild(button);
+
     // 组合卡片
     cardElement.appendChild(leftSide);
-    cardElement.appendChild(imageContainer);
-    cardElement.appendChild(button);
+    cardElement.appendChild(rightSide);
 
     // 添加到页面
     container.appendChild(cardElement);
