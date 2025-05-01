@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>电影播放器</title>
     <!-- MuiPlayer 样式 -->
-    <link rel="stylesheet" href="https://github.moeyy.xyz/https://github.com/muiplayer/hello-muiplayer/blob/master/release/mui-player/dist/mui-player.min.css">
+    <link rel="stylesheet" href="https://gh-proxy.com/github.com/muiplayer/hello-muiplayer/blob/master/release/mui-player/dist/mui-player.min.css">
     <!-- MuiPlayer 脚本 -->
-    <script src="https://github.moeyy.xyz/https://github.com/muiplayer/hello-muiplayer/blob/master/release/mui-player/dist/mui-player.min.js"></script>
+    <script src="https://gh-proxy.com/github.com/muiplayer/hello-muiplayer/blob/master/release/mui-player/dist/mui-player.min.js"></script>
     <!-- 自定义样式 -->
     <style>
         body {
