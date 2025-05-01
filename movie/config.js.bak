@@ -1,0 +1,16 @@
+const config = {
+  // 全局 API 地址（需替换为您的解析服务）
+  apiURL: "https://cn.apihz.cn/api/fun/douyin.php?id=88888888&key=88888888",
+
+  // 电影列表（仅需名称和视频 ID）
+  movies: [
+    {
+      name: "抖音视频1",
+      videoId: "https://www.douyin.com/video/7412875675570310452"
+    },
+    {
+      name: "抖音视频2",
+      videoId: "https://www.douyin.com/video/7419207373887147316"
+    }
+  ]
+};
