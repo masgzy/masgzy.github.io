@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>视频解析播放器</title>
+  <title>视频播放器</title>
   <style>
     body {
       margin: 0;
@@ -109,29 +109,14 @@
     const movieList = document.getElementById("movieList");
     const videoFrame = document.getElementById("videoFrame");
 
-    // 加载视频解析数据
-    async function loadVideo(videoId) {
-      try {
-        // 构造完整的 API 请求 URL（根据您的 API 规则调整）
-        const apiUrl = `${config.apiURL}?id=${videoId}`;
-        
-        // 发送请求解析视频
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-
-        if (data.code === 200 && data.video) {
-          // 假设 API 返回的 `video` 字段是视频地址
-          videoFrame.src = data.video;
-        } else {
-          alert("视频解析失败：" + data.msg);
-        }
-      } catch (error) {
-        console.error("API 请求失败:", error);
-        alert("无法连接到解析服务");
-      }
+    // 加载视频（直接拼接 URL）
+    function loadVideo(videoId) {
+      // 格式化 API URL（替换 ${id} 为实际视频 ID）
+      const fullUrl = config.apiURL.replace("${id}", videoId);
+      videoFrame.src = fullUrl;
     }
 
-    // 创建视频切换列表
+    // 创建视频列表
     function createMovieList() {
       if (!config?.movies?.length) return;
 
@@ -140,7 +125,7 @@
           `<div class="movie-item" data-index="${index}">${movie.name}</div>`
         ).join("");
 
-      // 添加点击事件
+      // 绑定点击事件
       document.querySelectorAll(".movie-item").forEach(item => {
         item.addEventListener("click", e => {
           const index = parseInt(e.target.dataset.index);
@@ -150,22 +135,12 @@
       });
     }
 
-    // 显示视频列表
-    function showMovieList() {
-      movieList.style.display = "flex";
-    }
-
-    // 隐藏视频列表
-    function hideMovieList() {
-      movieList.style.display = "none";
-    }
-
-    // 切换显示列表
+    // 切换列表显示
     switchBtn.addEventListener("click", () => {
       movieList.style.display = movieList.style.display === "flex" ? "none" : "flex";
     });
 
-    // 点击外部关闭
+    // 点击外部关闭列表
     document.addEventListener("click", e => {
       if (!switchBtn.contains(e.target) && !movieList.contains(e.target)) {
         hideMovieList();
