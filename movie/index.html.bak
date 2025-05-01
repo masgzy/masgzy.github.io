@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电影播放器</title>
+    <!-- MuiPlayer 样式 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mui-player/dist/mui-player.min.css">
+    <!-- 自定义样式 -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
+
+        #player-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .switch-btn {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .switch-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .movie-list {
+            position: fixed;
+            left: 20px;
+            bottom: 100px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 8px;
+            padding: 10px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 999;
+        }
+
+        .movie-item {
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .movie-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .switch-btn {
+                left: 10px;
+                bottom: 10px;
+                width: 50px;
+                height: 50px;
+            }
+
+            .movie-list {
+                left: 10px;
+                bottom: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 播放器容器 -->
+    <div id="player-container"></div>
+
+    <!-- 视频切换按钮 -->
+    <button class="switch-btn" id="switchBtn">📁</button>
+
+    <!-- 视频列表 -->
+    <div class="movie-list" id="movieList"></div>
+
+    <!-- 配置文件 -->
+    <script src="res/config.js"></script>
+
+    <!-- MuiPlayer 脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/mui-player/dist/mui-player.min.js"></script>
+    <script>
+        // 初始化播放器
+        let player = null;
+        const container = document.getElementById('player-container');
+        const switchBtn = document.getElementById('switchBtn');
+        const movieList = document.getElementById('movieList');
+
+        // 自动初始化播放器
+        function initPlayer(index = 0) {
+            if (player) player.destroy();
+
+            const movie = config.movies[index];
+            if (!movie) return;
+
+            player = new MuiPlayer({
+                container: '#player-container',
+                title: movie.name,
+                src: movie.url,
+                type: getVideoType(movie.url),
+                customContextMenu: [
+                    {
+                        text: '切换视频',
+                        callback: () => showMovieList()
+                    }
+                ]
+            });
+        }
+
+        // 自动检测视频类型
+        function getVideoType(url) {
+            if (url.includes('.m3u8')) return 'application/x-mpegURL';
+            if (url.includes('.mp4')) return 'video/mp4';
+            if (url.includes('.flv')) return 'video/x-flv';
+            return 'auto';
+        }
+
+        // 创建视频切换列表
+        function createMovieList() {
+            if (!config?.movies?.length) return;
+
+            movieList.innerHTML = config.movies
+                .map((movie, index) => 
+                    `<div class="movie-item" data-index="${index}">${movie.name}</div>`
+                ).join('');
+
+            // 添加点击事件
+            document.querySelectorAll('.movie-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    initPlayer(index);
+                    hideMovieList();
+                });
+            });
+        }
+
+        // 显示视频列表
+        function showMovieList() {
+            movieList.style.display = 'flex';
+        }
+
+        // 隐藏视频列表
+        function hideMovieList() {
+            movieList.style.display = 'none';
+        }
+
+        // 切换显示列表
+        switchBtn.addEventListener('click', () => {
+            movieList.style.display = movieList.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // 点击外部关闭
+        document.addEventListener('click', (e) => {
+            if (!switchBtn.contains(e.target) && !movieList.contains(e.target)) {
+                hideMovieList();
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            createMovieList();
+            initPlayer();
+        });
+    </script>
+</body>
+</html>

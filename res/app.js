@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (card.iconUrl) {
       const img = document.createElement("img");
       img.src = card.iconUrl;
-      img.alt = "项目图标";
+      img.alt = "图标";
       img.onclick = (e) => {
         e.stopPropagation(); // 防止多次触发
         window.location.href = card.link;
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const image = document.createElement("img");
       image.className = "card-image";
       image.src = card.imageUrl;
-      image.alt = "项目图片";
+      image.alt = "图片";
       image.onclick = () => window.location.href = card.link;
       imageContainer.appendChild(image);
     }
