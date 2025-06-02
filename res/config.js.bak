@@ -4,6 +4,12 @@ const cards = [
     description: "只是一些文件...",
     link: "/download",
     iconUrl: "img/download.png"
+  },
+  {
+    title: "电影",
+    description: "只是电影...",
+    link: "/movie",
+    iconUrl: "img/movie.png"
   }
 ];
 

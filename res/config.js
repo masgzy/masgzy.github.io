@@ -1,15 +1,9 @@
 const cards = [
   {
     title: "下载页",
-    description: "只是一些文件...",
+    description: "文件",
     link: "/download",
     iconUrl: "img/download.png"
-  },
-  {
-    title: "电影",
-    description: "只是电影...",
-    link: "/movie",
-    iconUrl: "img/movie.png"
   }
 ];
 
