@@ -138,8 +138,11 @@
                 link: "https://gh-proxy.com/https://github.com/masgzy/zy/releases/download/large/DeltaChat.apk"
             },
             { 
-                name: "历史答案",
-                link: "https://github.com/masgzy/zy/releases/download/large/Hist.Ans.pdf.​"
+                name: "五三历史答案",
+                link: "https://gh.996855.xyz/https://github.com/masgzy/zy/releases/download/large/Hist.Ans.pdf"
+            { 
+                name: "五三历史答案",
+                link: "https://gh.996855.xyz/https://github.com/masgzy/zy/releases/download/large/Hist.Ans.pdf"
             },
         ];
 
