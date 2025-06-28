@@ -582,24 +582,45 @@
         function loadVideo(url) {
             loadingOverlay.style.display = 'flex';
             errorMessage.style.display = 'none';
-            
-            // 设置视频源
-            videoPlayer.src = url;
-            
-            videoPlayer.onloadeddata = function() {
-                loadingOverlay.style.display = 'none';
-                videoPlayer.play().catch(e => {
-                    console.log('自动播放被阻止:', e);
+        
+            try {
+                // 使用 fetch 获取视频数据
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('视频加载失败');
+                }
+        
+                // 将响应数据转换为 Blob
+                const blob = await response.blob();
+        
+                // 创建一个指向 Blob 的 URL
+                const videoUrl = URL.createObjectURL(blob);
+        
+                // 设置视频源
+                videoPlayer.src = videoUrl;
+        
+                // 监听视频加载完成事件
+                videoPlayer.onloadeddata = function() {
                     loadingOverlay.style.display = 'none';
-                });
-            };
-            
-            videoPlayer.onerror = function() {
+                    videoPlayer.play().catch(e => {
+                        console.log('自动播放被阻止:', e);
+                        loadingOverlay.style.display = 'none';
+                    });
+                };
+        
+                // 监听视频加载错误事件
+                videoPlayer.onerror = function() {
+                    loadingOverlay.style.display = 'none';
+                    showError('视频加载失败，请重试或选择其他源');
+                    <!--URL.revokeObjectURL(videoUrl); // 释放不再使用的 URL-->
+                };
+            } catch (error) {
+                console.error('加载视频时发生错误:', error);
                 loadingOverlay.style.display = 'none';
                 showError('视频加载失败，请重试或选择其他源');
-            };
+            }
         }
-        
+
         // 显示错误消息
         function showError(message) {
             errorMessage.textContent = message;
@@ -689,13 +710,21 @@
                 showNotification(`开始下载: ${videoName}`);
                 
                 // 创建下载链接
-                const a = document.createElement('a');
-                a.href = videoUrl;
-                a.download = `${videoName}.mp4`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            });
+            const a = document.createElement('a');
+            a.href = videoUrl;
+            a.download = `${videoName}.mp4`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+    
+            // 释放不再使用的 URL
+            URL.revokeObjectURL(videoUrl);
+        } catch (error) {
+            console.error('下载视频时发生错误:', error);
+            showError('视频下载失败，请重试');
+        }
+    }
+
             
             // 点击外部关闭菜单
             document.addEventListener('click', function(e) {
