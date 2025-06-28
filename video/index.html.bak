@@ -53,6 +53,12 @@
             overflow: hidden;
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
+        
+            background: transparent; /* 透明背景 */
+            border-radius: 0; /* 移除圆角 */
+            box-shadow: none; /* 移除阴影 */
+            border: none; /* 去除边框 */
+
         }
         
         .player-header {
@@ -281,9 +287,9 @@
         .stats {
             display: flex;
             justify-content: space-between;
-            padding: 15px 20px;
-            background: #f0f8ff;
-            border-top: 1px solid #e0e0e0;
+            background: transparent; /* 透明背景 */
+            border: none; /* 无边框 */
+
             font-size: 0.95rem;
             color: #4a6fa5;
         }
@@ -389,7 +395,7 @@
 </head>
 <body>
 
-    <!--<div class="container">-->
+    <div class="container">
         <div class="player-header">
             <div class="app-title">
                 <i class="fas fa-video"></i>
@@ -444,7 +450,7 @@
                 <span id="current-position">当前源: 加载中...</span>
             </div>
         </div>
-    <!--</div>-->
+    </div>
     
     <div class="notification" id="notification"></div>
     
