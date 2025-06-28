@@ -6,118 +6,52 @@
     <title>视频播放器 - 实际API请求</title>
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: #f0f0f0;
-            min-height: 100vh;
-            padding: 20px;
+            background: #f0f0f0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
         
         .container {
-            max-width: 1000px;
-            width: 100%;
-            margin: 20px auto;
-            background: rgba(15, 23, 42, 0.9);
+            width: 90%;
+            max-width: 400px;
+            background: #ffffff;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .01);
         }
         
         .header {
-            padding: 20px;
-            text-align: center;
-            background: rgba(30, 41, 59, 0.7);
-            border-bottom: 1px solid #334155;
-        }
-        
-        .header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            color: #0ea5e9;
-        }
-        
-        .header p {
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-        
-        .header .api-info {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-        
-        #video-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
-            overflow: hidden;
-            background: #0f172a;
-        }
-        
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        
-        .controls {
             display: flex;
-            padding: 20px;
-            gap: 15px;
-            flex-wrap: wrap;
-            background: rgba(30, 41, 59, 0.7);
-            justify-content: center;
-        }
-        
-        .control-btn {
-            display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 1rem;
-            background: #1e3a8a;
+            padding: 10px;
+            background: #6699cc;
             color: white;
-            min-width: 160px;
-            justify-content: center;
         }
         
-        .control-btn:hover {
-            background: #3b82f6;
-            transform: translateY(-2px);
+        .api-select {
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
         }
         
-        .control-btn:active {
-            transform: translateY(1px);
-        }
-        
-        #api-menu {
+        .api-menu {
+            display: none;
             position: absolute;
             top: 60px;
-            left: 20px;
+            left: 0;
+            width: 100%;
             background: #1e293b;
-            min-width: 200px;
             border-radius: 8px;
-            overflow: hidden;
-            display: none;
             z-index: 100;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
@@ -128,9 +62,6 @@
             cursor: pointer;
             transition: background 0.2s;
             border-bottom: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
         .api-item:last-child {
@@ -146,9 +77,51 @@
             color: white;
         }
         
-        .api-item i {
-            width: 20px;
-            text-align: center;
+        .video-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #e0e0e0;
+        }
+        
+        .control-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            background: #4CAF50;
+            color: white;
+            width: 45%;
+        }
+        
+        .control-btn:hover {
+            background: #45a049;
+        }
+        
+        .control-btn:active {
+            transform: translateY(1px);
         }
         
         #error-message {
@@ -164,151 +137,40 @@
             font-weight: 600;
             z-index: 10;
         }
-        
-        .loader {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255,255,255,0.1);
-            border-radius: 50%;
-            border-top: 5px solid #0ea5e9;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-        
-        @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-        
-        .info {
-            padding: 15px 20px;
-            background: rgba(15, 23, 42, 0.7);
-            border-top: 1px solid #334155;
-            font-size: 0.9rem;
-        }
-        
-        .info-row {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        
-        .info-label {
-            min-width: 80px;
-            color: #0ea5e9;
-            font-weight: 600;
-        }
-        
-        .info-value {
-            flex: 1;
-            word-break: break-all;
-        }
-        
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
-        
-        @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .control-btn {
-                width: 100%;
-                max-width: 300px;
-            }
-            
-            .header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .info-row {
-                flex-direction: column;
-                gap: 5px;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>直接URL视频播放器</h1>
-            <p>实际请求video.json文件获取API列表</p>
-            <div class="api-info">
-                <i class="fas fa-info-circle"></i> 当前API源: <span id="current-api-source">video.json</span>
-            </div>
-        </div>
-        
-        <div id="video-container">
-            <video id="video-player" controls></video>
-            <div class="loader" id="loader"></div>
-            <div id="error-message">视频加载失败，请重试或选择其他源</div>
+            <button class="api-select" id="api-select-btn">选择API源</button>
             <div id="api-menu"></div>
         </div>
         
-        <div class="controls">
-            <button class="control-btn" id="select-api">
-                <i class="fas fa-server"></i> <span id="api-btn-text">选择API源</span>
-            </button>
-            <button class="control-btn" id="change-button">
-                <i class="fas fa-sync-alt"></i> 换一个视频
-            </button>
-            <button class="control-btn" id="save-button">
-                <i class="fas fa-download"></i> 下载视频
-            </button>
+        <div class="video-container">
+            <video id="video-player" controls></video>
+            <div id="error-message">视频加载失败，请重试或选择其他源</div>
         </div>
         
-        <div class="info">
-            <div class="info-row">
-                <div class="info-label">当前状态：</div>
-                <div class="info-value" id="status-info">正在加载API列表...</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">当前URL：</div>
-                <div class="info-value" id="url-info">等待加载</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">API数量：</div>
-                <div class="info-value" id="api-count">0</div>
-            </div>
+        <div class="controls">
+            <button class="control-btn" id="change-button">
+                换一个
+            </button>
+            <button class="control-btn" id="save-button">
+                保存视频
+            </button>
         </div>
-    </div>
-
-    <div class="footer">
-
     </div>
 
     <script>
-        // 实际请求video.json文件
         const apiUrl = 'video.json';
-        let currentIndex = 0;
         let apis = [];
+        let currentIndex = 0;
         const videoPlayer = document.getElementById('video-player');
-        const loader = document.getElementById('loader');
+        const apiSelectBtn = document.getElementById('api-select-btn');
+        const apiMenu = document.getElementById('api-menu');
         const errorMessage = document.getElementById('error-message');
-        const statusInfo = document.getElementById('status-info');
-        const urlInfo = document.getElementById('url-info');
-        const apiCountInfo = document.getElementById('api-count');
-        const apiBtnText = document.getElementById('api-btn-text');
-
-        document.getElementById('select-api').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const menu = document.getElementById('api-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        });
 
         function fetchApis() {
-            loader.style.display = 'block';
-            statusInfo.textContent = '正在请求video.json...';
-            urlInfo.textContent = apiUrl;
-            
             fetch(apiUrl)
                 .then(response => {
                     if (!response.ok) {
@@ -322,45 +184,38 @@
                     }
                     
                     apis = data;
-                    apiCountInfo.textContent = apis.length;
-                    
-                    const menu = document.getElementById('api-menu');
-                    menu.innerHTML = '';
-                    
-                    apis.forEach((item, index) => {
-                        const apiItem = document.createElement('div');
-                        apiItem.className = 'api-item';
-                        if (index === currentIndex) {
-                            apiItem.classList.add('active');
-                        }
-                        apiItem.innerHTML = `<i class="fas fa-video"></i> ${item.name || '未命名API'}`;
-                        apiItem.onclick = () => selectApi(index);
-                        menu.appendChild(apiItem);
-                    });
-                    
+                    buildApiMenu();
                     if (apis.length > 0) {
-                        apiBtnText.textContent = apis[0].name || 'API 1';
                         loadVideo(currentIndex);
                     } else {
-                        statusInfo.textContent = 'video.json中没有可用的API';
-                        loader.style.display = 'none';
+                        errorMessage.textContent = 'video.json中没有可用的API';
+                        errorMessage.style.display = 'block';
                     }
                 })
                 .catch(error => {
-                    loader.style.display = 'none';
                     errorMessage.textContent = `错误: ${error.message}`;
                     errorMessage.style.display = 'block';
-                    statusInfo.textContent = '加载video.json失败';
                     console.error('加载video.json失败:', error);
                 });
         }
 
+        function buildApiMenu() {
+            apiMenu.innerHTML = '';
+            apis.forEach((item, index) => {
+                const apiItem = document.createElement('div');
+                apiItem.className = 'api-item';
+                if (index === currentIndex) {
+                    apiItem.classList.add('active');
+                }
+                apiItem.textContent = item.name || `API ${index + 1}`;
+                apiItem.onclick = () => selectApi(index);
+                apiMenu.appendChild(apiItem);
+            });
+        }
+
         function selectApi(index) {
             currentIndex = index;
-            apiBtnText.textContent = apis[index].name || `API ${index + 1}`;
-            
-            // 更新API菜单中的活动项
-            const apiItems = document.querySelectorAll('.api-item');
+            const apiItems = apiMenu.querySelectorAll('.api-item');
             apiItems.forEach((item, i) => {
                 if (i === index) {
                     item.classList.add('active');
@@ -368,9 +223,9 @@
                     item.classList.remove('active');
                 }
             });
-            
+            apiSelectBtn.textContent = apis[index].name || `API ${index + 1}`;
             loadVideo(index);
-            document.getElementById('api-menu').style.display = 'none';
+            apiMenu.style.display = 'none';
         }
 
         function loadVideo(index) {
@@ -382,28 +237,16 @@
             
             const videoUrl = apis[index].url;
             
-            // 显示加载状态
-            loader.style.display = 'block';
-            errorMessage.style.display = 'none';
-            statusInfo.textContent = `正在加载: ${apis[index].name || `API ${index + 1}`}...`;
-            urlInfo.textContent = videoUrl;
-            
-            // 设置视频源 - 直接使用URL
             videoPlayer.src = videoUrl;
             
-            // 监听视频加载事件
             videoPlayer.onloadeddata = function() {
-                loader.style.display = 'none';
-                statusInfo.textContent = `已加载: ${apis[index].name || `API ${index + 1}`}`;
+                errorMessage.style.display = 'none';
                 videoPlayer.play().catch(e => console.log('自动播放被阻止:', e));
             };
             
-            // 错误处理
             videoPlayer.onerror = function() {
-                loader.style.display = 'none';
                 errorMessage.style.display = 'block';
                 errorMessage.textContent = '视频加载失败';
-                statusInfo.textContent = `加载失败: ${apis[index].name || `API ${index + 1}`}`;
             };
         }
 
@@ -431,7 +274,6 @@
                 return;
             }
             
-            // 创建临时下载链接
             const a = document.createElement('a');
             a.href = videoUrl;
             a.download = `video-${currentIndex + 1}.mp4`;
@@ -439,16 +281,14 @@
             a.click();
             document.body.removeChild(a);
             
-            statusInfo.textContent = `下载已开始: ${apis[currentIndex].name || `API ${currentIndex + 1}`}`;
+            errorMessage.textContent = `下载已开始: ${apis[currentIndex].name || `API ${currentIndex + 1}`}`;
         });
 
-        // 初始加载 - 请求video.json
-        fetchApis();
-        
-        // 点击页面其他区域关闭API菜单
-        document.addEventListener('click', function() {
-            document.getElementById('api-menu').style.display = 'none';
+        apiSelectBtn.addEventListener('click', function() {
+            apiMenu.style.display = apiMenu.style.display === 'block' ? 'none' : 'block';
         });
+
+        fetchApis();
     </script>
 </body>
 </html>
