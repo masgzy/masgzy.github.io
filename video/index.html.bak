@@ -674,7 +674,7 @@
                     showError('没有可用的API源');
                     return;
                 }
-                
+                URL.revokeObjectURL(videoUrl);
                 // 随机选择一个不同的源
                 let nextIndex;
                 do {
@@ -690,7 +690,7 @@
                     showError('没有可用的API源');
                     return;
                 }
-                
+                URL.revokeObjectURL(videoUrl);
                 // 刷新
 
                 
@@ -710,21 +710,21 @@
                 showNotification(`开始下载: ${videoName}`);
                 
                 // 创建下载链接
-            const a = document.createElement('a');
-            a.href = videoUrl;
-            a.download = `${videoName}.mp4`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-    
-            // 释放不再使用的 URL
-            URL.revokeObjectURL(videoUrl);
-        } catch (error) {
-            console.error('下载视频时发生错误:', error);
-            showError('视频下载失败，请重试');
+                const a = document.createElement('a');
+                a.href = videoUrl;
+                a.download = `${videoName}.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+        
+                // 释放不再使用的 URL
+                URL.revokeObjectURL(videoUrl);
+            } catch (error) {
+                console.error('下载视频时发生错误:', error);
+                showError('视频下载失败，请重试');
+            }
         }
-    }
-
+    
             
             // 点击外部关闭菜单
             document.addEventListener('click', function(e) {

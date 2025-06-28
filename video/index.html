@@ -383,6 +383,19 @@
                 padding: 12px 15px;
                 font-size: 1rem;
             }
+            /* 样式部分 */
+            .popup {
+                display: none;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                z-index: 1000;
+            }
         }
     </style>
 </head>
@@ -436,7 +449,7 @@
                 下载视频
             </button>
         </div>
-        
+        <div id="popup" class="popup">视频右下角下载</div>
         <div class="stats">
             <div class="stat-item">
                 <i class="fas fa-database"></i>
@@ -561,6 +574,17 @@
             });
         }
         
+        // JavaScript部分
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            popup.style.display = 'block'; // 显示弹窗
+            setTimeout(() => {
+                popup.style.display = 'none'; // 0.7秒后隐藏弹窗
+            }, 700);
+        }
+        
+        
+        
         // 选择API源
         function selectApi(index) {
             currentIndex = index;
@@ -582,45 +606,24 @@
         function loadVideo(url) {
             loadingOverlay.style.display = 'flex';
             errorMessage.style.display = 'none';
-        
-            try {
-                // 使用 fetch 获取视频数据
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('视频加载失败');
-                }
-        
-                // 将响应数据转换为 Blob
-                const blob = await response.blob();
-        
-                // 创建一个指向 Blob 的 URL
-                const videoUrl = URL.createObjectURL(blob);
-        
-                // 设置视频源
-                videoPlayer.src = videoUrl;
-        
-                // 监听视频加载完成事件
-                videoPlayer.onloadeddata = function() {
+            
+            // 设置视频源
+            videoPlayer.src = url;
+            
+            videoPlayer.onloadeddata = function() {
+                loadingOverlay.style.display = 'none';
+                videoPlayer.play().catch(e => {
+                    console.log('自动播放被阻止:', e);
                     loadingOverlay.style.display = 'none';
-                    videoPlayer.play().catch(e => {
-                        console.log('自动播放被阻止:', e);
-                        loadingOverlay.style.display = 'none';
-                    });
-                };
-        
-                // 监听视频加载错误事件
-                videoPlayer.onerror = function() {
-                    loadingOverlay.style.display = 'none';
-                    showError('视频加载失败，请重试或选择其他源');
-                    <!--URL.revokeObjectURL(videoUrl); // 释放不再使用的 URL-->
-                };
-            } catch (error) {
-                console.error('加载视频时发生错误:', error);
+                });
+            };
+            
+            videoPlayer.onerror = function() {
                 loadingOverlay.style.display = 'none';
                 showError('视频加载失败，请重试或选择其他源');
-            }
+            };
         }
-
+        
         // 显示错误消息
         function showError(message) {
             errorMessage.textContent = message;
@@ -674,7 +677,7 @@
                     showError('没有可用的API源');
                     return;
                 }
-                URL.revokeObjectURL(videoUrl);
+                
                 // 随机选择一个不同的源
                 let nextIndex;
                 do {
@@ -690,7 +693,7 @@
                     showError('没有可用的API源');
                     return;
                 }
-                URL.revokeObjectURL(videoUrl);
+                
                 // 刷新
 
                 
@@ -699,32 +702,8 @@
             
             // 保存按钮
             saveButton.addEventListener('click', function() {
-                if (apis.length === 0) {
-                    showError('没有可用的API源');
-                    return;
-                }
-                
-                const videoUrl = apis[currentIndex].url;
-                const videoName = apis[currentIndex].name || `video_${currentIndex + 1}`;
-                
-                showNotification(`开始下载: ${videoName}`);
-                
-                // 创建下载链接
-                const a = document.createElement('a');
-                a.href = videoUrl;
-                a.download = `${videoName}.mp4`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-        
-                // 释放不再使用的 URL
-                URL.revokeObjectURL(videoUrl);
-            } catch (error) {
-                console.error('下载视频时发生错误:', error);
-                showError('视频下载失败，请重试');
-            }
-        }
-    
+                showPopup()
+            });
             
             // 点击外部关闭菜单
             document.addEventListener('click', function(e) {
