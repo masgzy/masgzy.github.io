@@ -387,11 +387,7 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1><i class="fas fa-play-circle"></i> 多功能视频播放器</h1>
-        <p>从多个API源获取视频内容，支持在线播放和下载</p>
-    </div>
-    
+
     <div class="container">
         <div class="player-header">
             <div class="app-title">
@@ -451,9 +447,6 @@
     
     <div class="notification" id="notification"></div>
     
-    <div class="footer">
-        <p>© 2023 多功能视频播放器 | 支持多种视频格式和API源</p>
-    </div>
 
     <script>
         // DOM元素
