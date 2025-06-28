@@ -85,7 +85,7 @@
     <div id="error-message">加载失败</div>
 
     <script>
-        const apiUrl = '你的API链接'; // 替换为你的API链接
+        const apiUrl = 'video.json'; // 替换为你的API链接
 
         let currentIndex = 0;
         let apis = [];
