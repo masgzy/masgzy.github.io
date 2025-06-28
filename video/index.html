@@ -578,28 +578,52 @@
             loadVideo(selectedApi.url);
         }
         
-        // 加载视频
-        function loadVideo(url) {
-            loadingOverlay.style.display = 'flex';
-            errorMessage.style.display = 'none';
-            
-            // 设置视频源
-            videoPlayer.src = url;
-            
-            videoPlayer.onloadeddata = function() {
-                loadingOverlay.style.display = 'none';
-                videoPlayer.play().catch(e => {
-                    console.log('自动播放被阻止:', e);
-                    loadingOverlay.style.display = 'none';
+ 
+        async function getRedirectedUrl(url) {
+            try {
+                const response = await fetch(url, {
+                    redirect: 'manual' // 手动处理重定向
                 });
-            };
-            
-            videoPlayer.onerror = function() {
-                loadingOverlay.style.display = 'none';
-                showError('视频加载失败，请重试或选择其他源');
-            };
+                if (response.status === 302) {
+                    return response.headers.get('Location'); // 获取重定向后的 URL
+                } else {
+                    return url; // 如果没有重定向，返回原始 URL
+                }
+            } catch (error) {
+                console.error('Error fetching URL:', error);
+                return null; // 发生错误时返回 null
+            }
         }
-        
+
+    async function loadVideo(url) {
+        loadingOverlay.style.display = 'flex';
+        errorMessage.style.display = 'none';
+    
+        // 先获取重定向后的 URL
+        const redirectedUrl = await getRedirectedUrl(url);
+        if (!redirectedUrl) {
+            loadingOverlay.style.display = 'none';
+            showError('无法获取视频 URL');
+            return;
+        }
+    
+        // 设置视频源
+        videoPlayer.src = redirectedUrl;
+    
+        videoPlayer.onloadeddata = function() {
+                    loadingOverlay.style.display = 'none';
+                    videoPlayer.play().catch(e => {
+                        console.log('自动播放被阻止:', e);
+                        loadingOverlay.style.display = 'none';
+                    });
+                };
+                
+                videoPlayer.onerror = function() {
+                    loadingOverlay.style.display = 'none';
+                    showError('视频加载失败，请重试或选择其他源');
+                };
+    }
+    
         // 显示错误消息
         function showError(message) {
             errorMessage.textContent = message;
