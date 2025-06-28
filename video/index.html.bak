@@ -45,10 +45,10 @@
         }
         
 
-    .container {
-        width: 100%;
-        max-width: 100%; /* 确保容器宽度不超过视口宽度 */
-    }
+        .container {
+            width: 100%;
+            max-width: 100%; /* 确保容器宽度不超过视口宽度 */
+        }
         
         .app-title {
             font-size: 1.4rem;
