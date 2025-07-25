@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""
+add_entry.py
+往 video.json 追加 {"name":"","url":""} 记录
+
+用法：
+    python add_entry.py            单条交互
+    python add_entry.py -m         批量交互
+    python add_entry.py -a         API 模式（先让用户输入前缀）
+"""
+import json
+import os
+import sys
+import argparse
+
+FILE = 'video.json'
+
+def load_or_create():
+    if not os.path.isfile(FILE):
+        return []
+    try:
+        with open(FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        sys.exit(f'❌ {FILE} 格式错误，请检查 JSON 语法')
+
+def save(data):
+    with open(FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def single_add():
+    data = load_or_create()
+    name = input('请输入 name：').strip()
+    url  = input('请输入 url：').strip()
+    if not name or not url:
+        sys.exit('❌ name 和 url 不能为空')
+    data.append({"name": name, "url": url})
+    save(data)
+    print('✅ 已添加：', {"name": name, "url": url})
+
+def multi_add():
+    data = load_or_create()
+    print('进入批量模式，连续输入 name 与 url，留空 name 结束。\n')
+    while True:
+        name = input('name (留空结束)：').strip()
+        if not name:
+            break
+        url = input('url：').strip()
+        if not url:
+            print('❌ url 不能为空，本条跳过\n')
+            continue
+        data.append({"name": name, "url": url})
+        print('✅ 已添加：', {"name": name, "url": url}, '\n')
+    save(data)
+    print('批量添加完成')
+
+def api_add():
+    prefix = input('请输入 API 前缀（如 https://example.com/api/video/）：').rstrip('/')
+    if not prefix:
+        sys.exit('❌ 前缀不能为空')
+    prefix += ''   # 确保一个斜杠
+
+    data = load_or_create()
+    print('已进入 API 模式，只需输入 name 与 ID，留空 name 结束。\n')
+    while True:
+        name = input('name (留空结束)：').strip()
+        if not name:
+            break
+        vid = input('ID：').strip()
+        if not vid:
+            print('❌ ID 不能为空，本条跳过\n')
+            continue
+        url = f'{prefix}{vid}'
+        data.append({"name": name, "url": url})
+        print('✅ 已添加：', {"name": name, "url": url}, '\n')
+    save(data)
+    print('API 模式添加完成')
+
+def main():
+    parser = argparse.ArgumentParser(description='往 video.json 添加记录')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('-m', '--multiple', action='store_true',
+                       help='批量添加模式')
+    group.add_argument('-a', '--api', action='store_true',
+                       help='API 模式（先让用户输入前缀）')
+    args = parser.parse_args()
+
+    if args.multiple:
+        multi_add()
+    elif args.api:
+        api_add()
+    else:
+        single_add()
+
+if __name__ == '__main__':
+    main()
