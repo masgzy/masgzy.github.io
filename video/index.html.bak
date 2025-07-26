@@ -565,8 +565,8 @@
                     <i class="fas fa-video"></i>
                     <div class="api-info">
                         <div class="api-name">${item.name || `API源 ${index + 1}`}</div>
-                        <div class="api-url">${item.url.substring(0, 40)}${item.url.length > 40 ? '...' : ''}</div>
-                    </div>
+                        <!--<div class="api-url">${item.url.substring(0, 40)}${item.url.length > 40 ? '...' : ''}</div>
+                    </div>-->
                 `;
                 
                 apiItem.onclick = () => selectApi(index);
