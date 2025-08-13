@@ -1,0 +1,20 @@
+<!DOCTYPE html><title>跳转中</title><script>
+const 参数 = new URLSearchParams(location.search).get('id');
+let 尝试次数 = 0;
+
+function 尝试跳转() {
+  尝试次数++;
+  location.href = `dragon1967://reading?bookId=${参数}`;
+  
+  setTimeout(() => {
+    if (尝试次数 < 3 && !document.hidden) {
+      尝试跳转();
+    } else if (尝试次数 >= 3) {
+      document.write('跳转失败，已尝试3次');
+    }
+  }, 3000);
+}
+
+if (参数) 尝试跳转();
+else document.write('缺少id参数');
+</script>
