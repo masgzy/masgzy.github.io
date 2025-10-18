@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频播放器 - API源选择</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: none; /* 移除背景 */
+        }
+        
+        
+        .header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 100%;
+
+            border-radius: 20px;
+
+        
+            background: transparent; /* 透明背景 */
+            box-shadow: none; /* 移除阴影 */
+            border: none; /* 去除边框 */
+
+        }
+        
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(to right, #4a6fa5, #3d5a80);
+            color: white;
+        }
+        
+        .app-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .app-title i {
+            font-size: 1.2em;
+        }
+        
+        .api-select-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .api-select {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            min-width: 180px;
+            justify-content: space-between;
+        }
+        
+        .api-select:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .api-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 280px;
+            background: #1e293b;
+            border-radius: 12px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: menuAppear 0.3s ease forwards;
+        }
+        
+        @keyframes menuAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .search-container {
+            padding: 15px;
+            background: #0f172a;
+            border-bottom: 1px solid #334155;
+        }
+        
+        #api-search {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        #api-search::placeholder {
+            color: #94a3b8;
+        }
+        
+        .api-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .api-item {
+            padding: 15px 20px;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .api-item:last-child {
+            border-bottom: none;
+        }
+        
+        .api-item:hover {
+            background: #334155;
+        }
+        
+        .api-item.active {
+            background: linear-gradient(to right, #0ea5e9, #0284c7);
+            color: white;
+        }
+        
+        .api-item i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .api-info {
+            flex: 1;
+        }
+        
+        .api-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .api-url {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            word-break: break-all;
+        }
+        
+        .video-container {
+          position: relative;
+          width: 100%;
+          padding-top: 56.25%; /* 默认16:9，会被JS覆盖 */
+          overflow: hidden;
+          background: #000;
+        }
+        
+        .video-container video {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        
+
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 5;
+            display: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f5f5f5;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .control-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            background: linear-gradient(to right, #4CAF50, #45a049);
+            color: white;
+            width: 48%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            gap: 10px;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: #f0f8ff;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.95rem;
+            color: #4a6fa5;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #error-message {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(239, 68, 68, 0.95);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            display: none;
+            font-weight: 600;
+            z-index: 10;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; top: 10px; }
+            to { opacity: 1; top: 20px; }
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            padding: 15px 35px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; bottom: -50px; }
+            to { opacity: 1; bottom: 30px; }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: #cbd5e1;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                max-width: 95%;
+            }
+            
+            .player-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .api-select {
+                width: 100%;
+            }
+            
+            .api-menu {
+                width: 100%;
+                right: auto;
+                left: 0;
+            }
+            
+            .control-btn {
+                padding: 12px 15px;
+                font-size: 1rem;
+            }
+            /* 样式部分 */
+            .popup {
+                display: none;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                font-size: 14px;
+                z-index: 1000;
+            }
+        }
+    </style>
+
+    <script>
+    document.querySelector('video').onloadedmetadata = function() {
+      const video = this;
+      const container = video.parentElement;
+      const ratio = (video.videoHeight / video.videoWidth) * 100;
+      container.style.paddingTop = ratio + '%';
+    };
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="player-header">
+            <div class="app-title">
+                <i class="fas fa-video"></i>
+                <span>视频播放器</span>
+            </div>
+            <div class="api-select-container">
+                <button class="api-select" id="api-select-btn">
+                    <span id="current-api">选择API源</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="api-menu" id="api-menu">
+                    <div class="search-container">
+                        <input type="text" id="api-search" placeholder="搜索API源...">
+                    </div>
+                    <div class="api-list" id="api-list">
+                        <div class="api-item">
+                            <i class="fas fa-sync fa-spin"></i>
+                            <div class="api-info">正在加载API列表...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="video-container">
+            <video id="video-player" controls></video>
+            <div class="loading-overlay" id="loading-overlay">
+                <div class="spinner"></div>
+                <div>正在加载视频，请稍候...</div>
+            </div>
+            <div id="error-message">视频加载失败，请重试或选择其他源</div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="change-button">
+                <i class="fas fa-random"></i>
+                随机切换
+            </button>
+            <button class="control-btn" id="reload-button">
+                <i class="fas fa-random"></i>
+                换一个视频
+            </button>
+            <button class="control-btn" id="save-button">
+                <i class="fas fa-download"></i>
+                下载视频
+            </button>
+        </div>
+        <div id="popup" class="popup">视频右下角下载</div>
+        <div class="stats">
+            <div class="stat-item">
+                <i class="fas fa-database"></i>
+                <span id="api-count">加载中...</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-play-circle"></i>
+                <span id="current-position">当前源: 加载中...</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+
+    <script>
+        // DOM元素
+        const videoPlayer = document.getElementById('video-player');
+        const apiSelectBtn = document.getElementById('api-select-btn');
+        const apiMenu = document.getElementById('api-menu');
+        const apiList = document.getElementById('api-list');
+        const apiSearch = document.getElementById('api-search');
+        const errorMessage = document.getElementById('error-message');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const changeButton = document.getElementById('change-button');
+        const reloadButton = document.getElementById('reload-button');
+        const saveButton = document.getElementById('save-button');
+        const notification = document.getElementById('notification');
+        const currentApiSpan = document.getElementById('current-api');
+        const apiCountSpan = document.getElementById('api-count');
+        const currentPositionSpan = document.getElementById('current-position');
+        
+        // 应用状态
+        let apis = [];
+        let currentIndex = 0;
+        let filteredApis = [];
+        
+        // 初始化应用
+        function initApp() {
+            fetchApis();
+            setupEventListeners();
+        }
+        
+        // 从video.json获取API数据
+        function fetchApis() {
+            loadingOverlay.style.display = 'flex';
+            
+            fetch('video.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`无法加载video.json: ${response.status} ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data)) {
+                        throw new Error('video.json格式错误：数据应为数组');
+                    }
+                    
+                    if (data.length === 0) {
+                        throw new Error('video.json中没有可用的API');
+                    }
+                    
+                    apis = data;
+                    filteredApis = [...apis];
+                    
+                    buildApiMenu();
+                    updateStats();
+                    selectApi(0);
+                    
+                    loadingOverlay.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('加载API失败:', error);
+                    showError(`数据加载失败: ${error.message}`);
+                    
+                    // 更新API列表显示错误
+                    apiList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>数据加载失败</h3>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                    
+                    loadingOverlay.style.display = 'none';
+                });
+        }
+        
+        // 构建API菜单
+        function buildApiMenu() {
+            apiList.innerHTML = '';
+            
+            if (filteredApis.length === 0) {
+                apiList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>未找到匹配的API源</h3>
+                        <p>请尝试其他搜索关键词</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredApis.forEach((item, index) => {
+                const apiItem = document.createElement('div');
+                apiItem.className = 'api-item';
+                if (index === currentIndex) {
+                    apiItem.classList.add('active');
+                }
+                
+                apiItem.innerHTML = `
+                    <i class="fas fa-video"></i>
+                    <div class="api-info">
+                        <div class="api-name">${item.name || `API源 ${index + 1}`}</div>
+                        <!--<div class="api-url">${item.url.substring(0, 40)}${item.url.length > 40 ? '...' : ''}</div>
+                    </div>-->
+                `;
+                
+                apiItem.onclick = () => selectApi(index);
+                apiList.appendChild(apiItem);
+            });
+        }
+        
+        // JavaScript部分
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            popup.style.display = 'block'; // 显示弹窗
+            setTimeout(() => {
+                popup.style.display = 'none'; // 0.7秒后隐藏弹窗
+            }, 700);
+        }
+        
+        
+        
+        // 选择API源
+        function selectApi(index) {
+            currentIndex = index;
+            const selectedApi = apis[index];
+            
+            // 更新UI
+            currentApiSpan.textContent = selectedApi.name || `API源 ${index + 1}`;
+            currentPositionSpan.textContent = `当前源: ${index + 1}/${apis.length}`;
+            
+            // 关闭菜单
+            apiMenu.style.display = 'none';
+            apiSelectBtn.querySelector('i').className = 'fas fa-chevron-down';
+            
+            // 加载视频
+            loadVideo(selectedApi.url);
+        }
+        
+        // 加载视频
+        function loadVideo(url) {
+            loadingOverlay.style.display = 'flex';
+            errorMessage.style.display = 'none';
+            
+            // 设置视频源
+            videoPlayer.src = url;
+            
+            videoPlayer.onloadeddata = function() {
+                loadingOverlay.style.display = 'none';
+                videoPlayer.play().catch(e => {
+                    console.log('自动播放被阻止:', e);
+                    loadingOverlay.style.display = 'none';
+                });
+            };
+            
+            videoPlayer.onerror = function() {
+                loadingOverlay.style.display = 'none';
+                showError('视频加载失败，请重试或选择其他源');
+            };
+        }
+        
+        // 显示错误消息
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 更新统计信息
+        function updateStats() {
+            apiCountSpan.textContent = `${apis.length} 个API源可用`;
+            currentPositionSpan.textContent = `当前源: ${currentIndex + 1}/${apis.length}`;
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // API选择按钮
+            apiSelectBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = apiMenu.style.display === 'block';
+                apiMenu.style.display = isOpen ? 'none' : 'block';
+                apiSelectBtn.querySelector('i').className = isOpen ? 
+                    'fas fa-chevron-down' : 'fas fa-chevron-up';
+            });
+            
+            // API搜索
+            apiSearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                filteredApis = apis.filter(api => 
+                    (api.name && api.name.toLowerCase().includes(searchTerm)) || 
+                    (api.url && api.url.toLowerCase().includes(searchTerm))
+                );
+                buildApiMenu();
+            });
+            
+            // 换一个按钮
+            changeButton.addEventListener('click', function() {
+                if (apis.length === 0) {
+                    showError('没有可用的API源');
+                    return;
+                }
+                
+                // 随机选择一个不同的源
+                let nextIndex;
+                do {
+                    nextIndex = Math.floor(Math.random() * apis.length);
+                } while (nextIndex === currentIndex && apis.length > 1);
+                
+                selectApi(nextIndex);
+            });
+            
+            // 换一个视频按钮
+            reloadButton.addEventListener('click', function() {
+                if (apis.length === 0) {
+                    showError('没有可用的API源');
+                    return;
+                }
+                
+                // 刷新
+
+                
+                selectApi(currentIndex);
+            });
+            
+            // 保存按钮
+            saveButton.addEventListener('click', function() {
+                showPopup()
+            });
+            
+            // 点击外部关闭菜单
+            document.addEventListener('click', function(e) {
+                if (!apiSelectBtn.contains(e.target)) {
+                    apiMenu.style.display = 'none';
+                    apiSelectBtn.querySelector('i').className = 'fas fa-chevron-down';
+                }
+            });
+            
+            // 阻止在菜单内点击时关闭
+            apiMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+        
+        // 初始化应用
+        window.onload = initApp;
+    </script>
+</body>
+</html>
+
+
+
