@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影视播放</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    
+    <div class="container">
+        <header class="page-header">
+            <h1 class="page-title">影视播放</h1>
+            <p class="page-subtitle">精选影视资源</p>
+        </header>
+        
+        <!-- 播放器区域 -->
+        <div class="player-section" id="player-section" style="display: none;">
+            <div class="player-wrapper">
+                <div class="player-header">
+                    <button class="back-btn" id="back-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        返回
+                    </button>
+                    <h2 class="player-title" id="player-title"></h2>
+                </div>
+                <div class="video-container">
+                    <video id="video-player" controls>
+                        您的浏览器不支持视频播放
+                    </video>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 电影列表 -->
+        <div class="movie-grid" id="movie-grid"></div>
+    </div>
+    
+    <script src="../res/theme.js"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

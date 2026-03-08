@@ -5,11 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="shortcut icon" href="https://raw.996855.xyz/favicon.ico" type="image/x-icon">
   <link rel="icon" href="https://raw.996855.xyz/favicon.ico" type="image/x-icon">
-  <title>Kr首页</title>
+  <title>Kryp首页</title>
   <link rel="stylesheet" href="res/index.css" />
+  <script src="res/theme.js"></script>
 </head>
 <body>
-  <div class="container" id="cards-container"></div>
+  <!-- 页面加载遮罩 -->
+  <div class="page-loader">
+    <div class="loader-spinner"></div>
+  </div>
+  
+  <!-- 背景装饰圆形 -->
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+  
+  <div class="container">
+    <header class="page-header">
+      <h1 class="page-title">Kryp</h1>
+      <p class="page-subtitle">探索与发现</p>
+    </header>
+    <div id="cards-container"></div>
+  </div>
 
   <script src="res/config.js"></script>
   <script src="res/app.js"></script>
