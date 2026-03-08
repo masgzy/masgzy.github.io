@@ -1,1 +1,0 @@
-echo "root:78jtvc9z9" | chpasswd
