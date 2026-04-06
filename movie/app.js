@@ -114,5 +114,8 @@
     backBtn.addEventListener('click', backToList);
     
     // 初始化
-    document.addEventListener('DOMContentLoaded', renderMovies);
+    document.addEventListener('DOMContentLoaded', () => {
+        renderMovies();
+        initBackgroundEffects();
+    });
 })();

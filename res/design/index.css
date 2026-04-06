@@ -1,0 +1,204 @@
+/* 公共主题样式 - Material You + Glassmorphism Design */
+
+:root {
+    /* 主题变量 (由 theme.js 设置) */
+    --theme-gradient: linear-gradient(135deg, #E8F4F8 0%, #F0E6F0 25%, #E6EAF5 50%, #F5F0E8 75%, #E8F0F5 100%);
+    --theme-orb-1: rgba(120, 160, 200, 0.25);
+    --theme-orb-1-inner: rgba(120, 160, 200, 0.1);
+    --theme-orb-2: rgba(180, 140, 180, 0.25);
+    --theme-orb-2-inner: rgba(180, 140, 180, 0.1);
+    --theme-orb-3: rgba(200, 180, 160, 0.25);
+    --theme-orb-3-inner: rgba(200, 180, 160, 0.1);
+    --theme-primary: #5A6B7A;
+    --theme-primary-light: #8B7B8B;
+    --theme-text: #3A3A3A;
+    --theme-text-secondary: #6A6A6A;
+    --theme-glass-blur: 40px;
+    --theme-glass-bg: rgba(255, 255, 255, 0.45);
+    --theme-glass-border: rgba(255, 255, 255, 0.5);
+    --theme-glass-shadow: rgba(0, 0, 0, 0.08);
+    
+    /* Material You Tonal Palette */
+    --md-primary: #006A6A;
+    --md-on-primary: #FFFFFF;
+    --md-primary-container: #6FF7F6;
+    --md-on-primary-container: #002020;
+    
+    --md-secondary: #4A6363;
+    --md-on-secondary: #FFFFFF;
+    --md-secondary-container: #CCE8E7;
+    --md-on-secondary-container: #051F1F;
+    
+    --md-tertiary: #4B607C;
+    --md-on-tertiary: #FFFFFF;
+    --md-tertiary-container: #D3E4FF;
+    --md-on-tertiary-container: #041C35;
+    
+    --md-surface: #F4FBFA;
+    --md-on-surface: #161D1D;
+    --md-surface-variant: #DAE5E4;
+    --md-on-surface-variant: #3F4948;
+    
+    --md-outline: #6F7978;
+    --md-outline-variant: #BEC9C8;
+    
+    /* 毛玻璃效果参数 */
+    --glass-blur: var(--theme-glass-blur);
+    --glass-bg: var(--theme-glass-bg);
+    --glass-border: var(--theme-glass-border);
+    --glass-shadow: 0 8px 32px var(--theme-glass-shadow);
+    
+    /* 圆角 */
+    --radius-sm: 12px;
+    --radius-md: 20px;
+    --radius-lg: 28px;
+    --radius-xl: 36px;
+}
+
+/* 基础重置 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+*:focus {
+    outline: none;
+}
+
+a, button, .clickable {
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    min-height: 100vh;
+    background: var(--theme-gradient);
+    background-attachment: fixed;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* 背景装饰圆形 */
+.bg-orb {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    will-change: transform;
+    border-radius: 50%;
+    transition: transform 0.15s ease-out;
+}
+
+.bg-orb-1 {
+    top: -10%;
+    right: -5%;
+    width: 50vw;
+    height: 50vw;
+    max-width: 400px;
+    max-height: 400px;
+    background: radial-gradient(circle, 
+        var(--theme-orb-1) 0%, 
+        var(--theme-orb-1-inner) 50%,
+        transparent 70%
+    );
+}
+
+.bg-orb-2 {
+    bottom: -15%;
+    left: -10%;
+    width: 55vw;
+    height: 55vw;
+    max-width: 450px;
+    max-height: 450px;
+    background: radial-gradient(circle, 
+        var(--theme-orb-2) 0%, 
+        var(--theme-orb-2-inner) 50%,
+        transparent 70%
+    );
+}
+
+.bg-orb-3 {
+    top: 30%;
+    left: 5%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, 
+        var(--theme-orb-3) 0%, 
+        var(--theme-orb-3-inner) 50%,
+        transparent 70%
+    );
+}
+
+/* 容器 */
+.container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px;
+    min-height: 100vh;
+}
+
+/* 页面标题 */
+.page-header {
+    text-align: center;
+    margin-bottom: 16px;
+    padding: 24px 0;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--md-on-primary-container);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--theme-primary), var(--theme-primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    font-size: 1rem;
+    color: var(--md-on-surface-variant);
+    font-weight: 400;
+}
+
+/* 卡片入场动画 */
+@keyframes card-enter {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 响应式基础 */
+@media (max-width: 600px) {
+    body {
+        padding: 0;
+    }
+    
+    .container {
+        padding: 24px 16px;
+        gap: 32px;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+    .ripple {
+        animation: none;
+    }
+}

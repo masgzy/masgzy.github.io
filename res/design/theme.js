@@ -27,12 +27,12 @@ const theme = {
         textSecondary: '#6A6A6A'
     },
     
-    // 毛玻璃效果
+    // 毛玻璃效果 - iOS Control Center 风格
     glass: {
         blur: '40px',
-        bg: 'rgba(255, 255, 255, 0.5)',
-        border: 'rgba(255, 255, 255, 0.6)',
-        shadow: 'rgba(90, 107, 122, 0.1)'
+        bg: 'rgba(255, 255, 255, 0.45)',
+        border: 'rgba(255, 255, 255, 0.5)',
+        shadow: 'rgba(0, 0, 0, 0.08)'
     }
 };
 

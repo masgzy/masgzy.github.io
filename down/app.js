@@ -25,4 +25,7 @@ function generateFileList() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', generateFileList);
+document.addEventListener('DOMContentLoaded', () => {
+    generateFileList();
+    initBackgroundEffects();
+});
