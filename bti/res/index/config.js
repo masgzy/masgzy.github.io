@@ -5,6 +5,11 @@ const cards = [
     link: "/sbti"
   },
   {
+    title: "SBTI Pro Max",
+    description: "SBTI的Pro Max版本，只是有一些注解，其他与原版无异(跳转到外站)",
+    link: "https://sbti.jukilab.com/"
+  },
+  {
     title: "HBTI",
     description: "SBTI已经过时，HATI来了🎩🎩 HATI 帽子工厂 v2.0",
     link: "/hbti"
