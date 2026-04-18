@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跳转提示 | 正在前往新页面</title>
+    <!-- 1. 首先引入主样式，定义毛玻璃等基础变量 -->
+    <link rel="stylesheet" href="res/index.css">
+    <!-- 2. 引入主题配置脚本，应用主题到CSS变量 -->
+    <script src="res/theme.js"></script>
+    <style>
+        /* 跳转页专属样式，补充主CSS */
+        .redirect-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            gap: 40px;
+        }
+
+        /* 毛玻璃跳转信息卡片 */
+        .glass-card {
+            backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+            -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+            background-color: var(--glass-bg);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            padding: 50px 40px;
+            max-width: 600px;
+            width: 90%;
+            animation: card-enter 0.6s ease-out;
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 24px;
+            color: var(--md-primary);
+        }
+
+        .card-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--md-on-primary-container);
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-subtitle {
+            font-size: 1.1rem;
+            color: var(--theme-text-secondary);
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        /* 倒计时显示 */
+        .countdown {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--md-primary);
+            margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .countdown-label {
+            font-size: 1rem;
+            color: var(--md-outline);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
+
+        /* 目标链接展示 */
+        .target-url {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 12px 20px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: var(--theme-text);
+            border: 1px dashed var(--md-outline-variant);
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        /* 按钮样式 */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--md-primary);
+            color: var(--md-on-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--md-primary-container);
+            color: var(--md-on-primary-container);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--md-secondary);
+            border: 1.5px solid var(--md-outline-variant);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--md-surface-variant);
+            border-color: var(--md-secondary);
+        }
+
+        /* 页脚 */
+        .page-footer {
+            color: var(--theme-text-secondary);
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 600px) {
+            .glass-card {
+                padding: 40px 24px;
+                width: 95%;
+            }
+            .card-title {
+                font-size: 1.8rem;
+            }
+            .countdown {
+                font-size: 2.8rem;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰圆形 -->
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+
+    <div class="container redirect-container">
+        <main class="glass-card">
+            <!-- 图标 -->
+            <div class="card-icon">↪️</div>
+            <!-- 主标题 -->
+            <h1 class="card-title">正在为您跳转</h1>
+            <!-- 副标题 -->
+            <p class="card-subtitle">
+                您即将离开当前页面，前往以下链接。<br>
+                如果页面没有自动跳转，请点击下方的按钮。
+            </p>
+            <!-- 倒计时 -->
+            <div class="countdown" id="countdown">5</div>
+            <div class="countdown-label">秒后自动跳转</div>
+            <!-- 目标链接展示 -->
+            <p style="margin-bottom: 8px; color: var(--theme-text-secondary);">目标地址：</p>
+            <div class="target-url" id="targetUrl">
+                <!-- 链接将通过JS动态填入 -->
+            </div>
+            <!-- 操作按钮 -->
+            <div class="action-buttons">
+                <a href="#" class="btn btn-primary" id="jumpNowBtn">
+                    <span>立即跳转</span>
+                </a>
+                <button class="btn btn-secondary" id="cancelBtn">
+                    <span>取消跳转</span>
+                </button>
+            </div>
+        </main>
+        <footer class="page-footer">
+            <p>© 2026 跳转中转页 | 本页使用 Material You + 毛玻璃设计</p>
+        </footer>
+    </div>
+
+    <!-- 跳转逻辑脚本 -->
+    <script>
+        // 配置部分
+        const REDIRECT_CONFIG = {
+            // === 请修改此处为目标链接 ===
+            targetUrl: 'https://xpti.pages.dev/',
+            // ===========================
+            countdownStart: 5, // 倒计时时长（秒）
+        };
+
+        // 获取DOM元素
+        const countdownEl = document.getElementById('countdown');
+        const targetUrlEl = document.getElementById('targetUrl');
+        const jumpNowBtn = document.getElementById('jumpNowBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // 初始化
+        let countdown = REDIRECT_CONFIG.countdownStart;
+        let countdownInterval = null;
+        targetUrlEl.textContent = REDIRECT_CONFIG.targetUrl;
+        jumpNowBtn.href = REDIRECT_CONFIG.targetUrl;
+
+        // 更新倒计时显示
+        function updateCountdown() {
+            countdownEl.textContent = countdown;
+            if (countdown <= 0) {
+                performRedirect();
+            }
+        }
+
+        // 执行跳转
+        function performRedirect() {
+            clearInterval(countdownInterval);
+            window.location.href = REDIRECT_CONFIG.targetUrl;
+        }
+
+        // 取消跳转
+        function cancelRedirect() {
+            clearInterval(countdownInterval);
+            countdownEl.textContent = '已取消';
+            countdownEl.style.color = 'var(--md-secondary)';
+            jumpNowBtn.textContent = '手动跳转';
+            cancelBtn.style.display = 'none';
+            document.querySelector('.card-subtitle').innerHTML = '跳转已取消。您可以随时点击下方的按钮手动前往。';
+        }
+
+        // 启动倒计时
+        function startCountdown() {
+            updateCountdown();
+            countdownInterval = setInterval(() => {
+                countdown--;
+                updateCountdown();
+            }, 1000);
+        }
+
+        // 绑定事件
+        jumpNowBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            performRedirect();
+        });
+        cancelBtn.addEventListener('click', cancelRedirect);
+
+        // 页面加载完成后开始倒计时
+        window.addEventListener('DOMContentLoaded', startCountdown);
+    </script>
+</body>
+</html>
+=

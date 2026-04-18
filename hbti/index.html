@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HATI · 帽子工厂</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,Segoe UI,PingFang SC,Microsoft YaHei,sans-serif}
+body{
+  background: url("images/back.webp") center center / cover no-repeat fixed;
+  color:#222;
+  padding-bottom:60px;
+}
+.top-bar{
+  position:sticky;
+  top:0;
+  background:#fff;
+  z-index:10;
+  padding:10px 20px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.05);
+  opacity:0;          /* 默认隐藏 */
+  visibility:hidden;  /* 默认隐藏 */
+  transition:all 0.4s ease; /* 平滑出现 */
+}
+.top-bar.show{
+  opacity:1;
+  visibility:visible;
+}
+.progress-text{font-size:14px;color:#666;margin-bottom:6px}
+.progress-bar{height:8px;background:#e0f7ff;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:#38bdf8;width:0%;transition:width 0.3s}
+.container{max-width:600px;margin:20px auto;padding:20px;position:relative;background:rgba(255,255,255,0.75);border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,0.1)}
+.header{text-align:center;padding:20px}
+.header h1{font-size:28px;color:#0284c7}
+.header p{font-size:16px;color:#666;margin-top:6px}
+.rule-btn{position:absolute;top:20px;right:20px;background:#e0f7ff;color:#0284c7;border:none;border-radius:12px;padding:8px 12px;font-size:14px;cursor:pointer}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:999}
+.modal-box{background:#fff;border-radius:20px;padding:22px;max-width:360px;width:86%;max-height:75vh;overflow-y:auto;text-align:center}
+.modal-box img{max-width:160px;border-radius:12px;margin:0 auto 12px;display:block}
+.modal-close{margin-top:16px;background:#38bdf8;color:#fff;border:none;border-radius:14px;padding:10px 20px;font-size:15px}
+.question{background:#f8fcff;border-radius:18px;padding:22px;margin:16px 0}
+.q-title{font-size:18px;margin-bottom:16px;font-weight:500}
+.option{background:#fff;border:1px solid #d1f1ff;border-radius:14px;padding:14px 18px;margin-bottom:10px;cursor:pointer}
+.option.selected{background:#bae6fd;border-color:#38bdf8}
+.btn{display:block;width:100%;padding:18px;border:none;border-radius:18px;background:#38bdf8;color:#fff;font-size:18px;font-weight:60px;margin-top:20px}
+.result{background:#fff;border-radius:22px;padding:32px;margin:30px auto;max-width:600px;text-align:center;box-shadow:0 10px 30px rgba(170,200,230,0.15)}
+.result-img{width:160px;height:160px;object-fit:cover;border-radius:16px;margin:0 auto 16px;display:block}
+.hat-name{font-size:26px;color:#0284c7;margin-bottom:12px}
+.hat-desc{font-size:17px;line-height:1.7;color:#444}
+.score-box{margin:20px 0;font-size:15px;color:#333;line-height:1.6}
+.hide{display:none}
+</style>
+</head>
+<body>
+
+<div class="top-bar" id="topBar">
+  <div class="progress-text" id="progressText">0/26 题</div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<div class="container" id="startPage">
+  <button class="rule-btn" onclick="openModal()" style="top:5px;">玩前必读</button>
+  <div class="header">
+    <h1>SBTI已经过时，HATI来了🎩</h1>
+    <p>🎩 HATI 帽子工厂 v2.0</p>
+  </div>
+  <button class="btn" onclick="startTest()">开始测试</button>
+</div>
+
+<div id="modal" class="modal hide">
+  <div class="modal-box">
+    <img src="images/up.webp" loading="lazy">
+    <h2>🎩 玩前须知</h2>
+    <p style="font-size:12px; font-weight:bold; line-height:1.8; text-align:center; white-space:pre-wrap;">
+作为网站开发者，
+我完全拥护中国共产党的领导，支持社会主义，
+忠于中华人民共和国宪法，维护宪法权威，
+忠于祖国与人民，恪守社会主义核心价值观，
+坚决反对历史虚无主义、一切分裂国家行为，
+以及法西斯主义、帝国主义、霸权主义，
+自觉遵守《网络信息内容生态治理规定》，
+积极营造清朗网络空间。
+    </p>
+
+    <button class="modal-close" onclick="window.open('https://www.bilibili.com/video/BV1uC8TzwE2x/', '_blank')">帽子工厂原视频</button>
+    <div style="margin-top:35px;"></div>
+    <p style="font-size:15px; font-weight:bold; text-align:center;">
+P.s.为避免敏感内容，网站中部分词条的释义及配图可能与其原意不符，请大家见谅🙏🙏
+点这里👇看点好康的
+    </p>
+    <button class="modal-close" onclick="window.open('https://space.bilibili.com/2119403467/', '_blank')">作者B站🥺</button>
+    <div style="margin-top:35px;"></div>
+    <p style="font-size:15px; font-weight:bold; text-align:center;">
+🍪 投喂一下作者叭 👇 助力更新💖🙏
+    </p>
+    <img src="images/down.webp" loading="lazy" style="margin-top:16px">
+    <p style="font-size:15px; font-weight:bold; text-align:center;">
+v2.0更新：
+    </p>
+    <p style="font-size:12px;text-align:center;">
+1.加入随机权重算法,结果不再固定<br>
+2.维度由四维升级至八维<br>
+3.题库大更新，且题目与选项均会随机出现
+    </p>
+    <button class="modal-close" onclick="closeModal()">知道啦</button>
+  </div>
+</div>
+
+<div class="container" id="testPage" style="display:none">
+  <div id="questionsContainer"></div>
+  <button class="btn" onclick="showResult()">完成答题 → 查看我的帽子</button>
+</div>
+
+<div id="resultPage" style="display:none; padding:0 20px">
+  <div class="result">
+    <img id="resultImage" class="result-img">
+    <h2 id="hatName" class="hat-name"></h2>
+    <p id="hatDesc" class="hat-desc"></p>
+    <div id="scoreText" class="score-box"></div>
+    <button class="btn" onclick="restart()">重新测试</button>
+    <button class="btn" onclick="generateShare()">生成分享图</button>
+  </div>
+</div>
+
+<script>
+// ====================== 唯一改动：预加载所有图片 ======================
+window.addEventListener('DOMContentLoaded', () => {
+  const images = [
+    "images/back.webp",
+    "images/up.webp",
+    "images/down.webp",
+    "images/1.webp","images/2.webp","images/3.webp","images/4.webp","images/5.webp",
+    "images/6.webp","images/7.webp","images/8.webp","images/9.webp","images/10.webp",
+    "images/11.webp","images/12.webp","images/13.webp","images/14.webp","images/15.webp",
+    "images/16.webp","images/17.webp","images/18.webp","images/19.webp","images/20.webp",
+    "images/21.webp","images/22.webp","images/23.webp","images/24.webp","images/25.webp"
+  ];
+  images.forEach(src => { const img = new Image(); img.src = src; });
+});
+// ====================================================================
+
+let shuffledQuestions = [];
+function generateShare(){
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = 800; canvas.height = 1000;
+  ctx.fillStyle = "#fff"; ctx.fillRect(0,0,800,1000);
+  ctx.fillStyle = "#0284c7"; ctx.font = "bold 40px sans-serif"; ctx.textAlign = "center";
+  ctx.fillText("🎩 帽子工厂测试结果",400,80);
+  const name = document.getElementById("hatName").innerText;
+  ctx.fillStyle = "#111"; ctx.font = "bold 36px sans-serif";
+  ctx.fillText(name,400,180);
+  const desc = document.getElementById("hatDesc").innerText;
+  ctx.font = "24px sans-serif"; wrapText(ctx,desc,400,260,600,36);
+  const scoreText = document.getElementById("scoreText").innerText;
+  ctx.font = "22px sans-serif"; wrapText(ctx,scoreText,400,600,600,32);
+  ctx.fillStyle = "#0284c7"; ctx.font = "bold 28px sans-serif";
+  ctx.fillText("👉来测你的帽子：hati.fan",400,920);
+  const link = document.createElement("a");
+  link.download = "帽子测试结果.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+function wrapText(ctx,text,x,y,maxWidth,lineHeight){
+  const words=text.split('');let line='';let testLine='';let lines=[];
+  for(let i=0;i<words.length;i++){
+    testLine+=words[i];const m=ctx.measureText(testLine);
+    if(m.width>maxWidth){lines.push(line);line=words[i];testLine=words[i];}else{line=testLine;}
+  }
+  lines.push(line);lines.forEach((l,i)=>{ctx.fillText(l,x,y+i*lineHeight);});
+}
+function openModal(){document.getElementById("modal").classList.remove("hide");}
+function closeModal(){document.getElementById("modal").classList.add("hide");}
+function shuffle(arr){let a=[...arr];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+let score={a:0,b:0,c:0,d:0,e:0,f:0,g:0,h:0};
+const questions = [
+  {
+    q: "有人在你评论区扣帽子、贴标签，试图定性你，你会？",
+    options: [
+      { t: "当场强硬反击，把帽子原封不动甩回去压制对方", c: 2, e: 1 },
+      { t: "冷静拆解对方逻辑漏洞，全程不被对方带偏节奏", b: 2, f: 1 },
+      { t: "顺势阴阳拱火，故意曲解对方言论看双方互吵乐子", a: 2, g: 1 },
+      { t: "直接无视划走，懒得纠缠，避免自身情绪被干扰", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "舆论场一有风吹草动就立刻站队狂欢，这种行为你怎么看？",
+    options: [
+      { t: "极度反感，坚守事实底线，反对无脑跟风站队", a: 2, e: 1 },
+      { t: "看透跟风本质，分析背后流量节奏与舆论操纵", b: 2, f: 1 },
+      { t: "跟着大部队一起站队狂欢，享受群体情绪共鸣", c: 2, g: 1 },
+      { t: "全程冷眼旁观，不参与任何一方，毫无波澜", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "同一件事放在国内外就是两套评价标准，你的态度是？",
+    options: [
+      { t: "直接强硬驳斥双标，绝不接受任何双重评判标准", a: 2, e: 1 },
+      { t: "罗列细节证据对比，让双标逻辑漏洞自行暴露", b: 2, f: 1 },
+      { t: "刻意偏袒一方，主动为自身立场双标辩解", c: 2, g: 1 },
+      { t: "见怪不怪佛系看待，默认世界本就双重标准", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "热点刚出就有人急着编造阴谋论，你通常的选择是？",
+    options: [
+      { t: "第一时间强硬反驳，拒绝阴谋论歪曲客观事实", a: 2, e: 1 },
+      { t: "溯源信息来源，理性辨别风向与刻意带节奏行为", b: 2, f: 1 },
+      { t: "主动传播扩散阴谋论，乐于相信猎奇极端猜测", c: 2, g: 1 },
+      { t: "静等官方最终定论，全程不参与任何猜测争论", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "拿“格局小了”“不懂大局”压制正常质疑，你怎么应对？",
+    options: [
+      { t: "完全不吃道德绑架，坚持发声阐明自身观点道理", a: 2, e: 1 },
+      { t: "反向追问定义，逼对方阐明所谓大局的具体含义", b: 2, f: 1 },
+      { t: "顺着对方话术反讽抬杠，故意扩大矛盾激化争论", c: 2, g: 1 },
+      { t: "闭口不再争辩，主动退让避开此类无意义对线", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "评论区被统一话术刷屏，真实声音被淹没，你会？",
+    options: [
+      { t: "坚持强势发声，绝不被水军刷屏氛围压制噤声", a: 2, e: 1 },
+      { t: "分析刷屏话术规律，辨别是否为有组织舆论控评", b: 2, f: 1 },
+      { t: "跟风复制刷屏话术，加入大军一起淹没不同观点", c: 2, g: 1 },
+      { t: "直接退出该话题，远离被污染失衡的讨论环境", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "网络辩论一旦说不过就开始人身攻击，这种人你怎么处理？",
+    options: [
+      { t: "直接判定对方逻辑破产，强势终止对话不屑争辩", a: 2, e: 1 },
+      { t: "留存对话证据，公开展示对方无素质辩论全貌", b: 2, f: 1 },
+      { t: "以其人之道还治其人之身，用激烈言语回击对线", c: 2, e: 1 },
+      { t: "直接拉黑屏蔽，完全无视避免拉低自身层次", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "假装理中客，实则暗地踩一捧一，这种话术你的判断是？",
+    options: [
+      { t: "一眼看穿伪装，坚定戳破其隐藏的偏向立场", a: 2, e: 1 },
+      { t: "循序渐进引导发言，逼迫对方暴露真实极端立场", b: 2, f: 1 },
+      { t: "跟随其隐晦观点附和，暗中一起踩一捧一带节奏", c: 2, g: 1 },
+      { t: "毫不在意视而不见，认为此类言论无法影响自身", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "历史人物和事件被随意解构玩梗，你的底线是？",
+    options: [
+      { t: "坚守原则底线，强硬制止恶意解构并严肃纠正", a: 2, e: 1 },
+      { t: "严格区分良性玩梗与恶意亵渎，只反击恶意行为", b: 2, f: 1 },
+      { t: "主动跟风玩梗恶搞，乐于解构严肃历史娱乐化", c: 2, e: 1 },
+      { t: "直接划走回避，不观看不参与所有相关内容", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "官方发布信息后，仍有人执意不信带偏节奏，你会？",
+    options: [
+      { t: "坚定维护权威通报，强硬制止无端造谣抹黑行为", a: 2, e: 1 },
+      { t: "结合通报细节理性分析疑点，客观辩证看待信息", b: 2, f: 1 },
+      { t: "附和质疑声音，一起否定官方信息扩散谣言猜测", c: 2, g: 1 },
+      { t: "置身事外不掺和，他人信与不信皆与自己无关", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "外网对我们的叙事长期片面抹黑，你的看法是？",
+    options: [
+      { t: "必须强硬对外反击，绝不任由长期污蔑抹黑", a: 2, e: 1 },
+      { t: "洞悉国际舆论战逻辑，理性客观对外输出事实", b: 2, f: 1 },
+      { t: "反向跟风贬低自身，认同外网全部片面负面叙事", c: 2, g: 1 },
+      { t: "认为距离遥远无关，此类舆论完全影响现实生活", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "一出现社会事件就上升到攻击整个群体，你认同吗？",
+    options: [
+      { t: "坚决极度反对，抵制极端对立，拒绝群体化攻击", a: 2, e: 1 },
+      { t: "明确指出以偏概全漏洞，剖析此类错误逻辑", b: 2, f: 1 },
+      { t: "跟随情绪攻击群体，用片面案例否定全部个体", c: 2, g: 1 },
+      { t: "无视此类争吵，认为网络群体对立毫无现实意义", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "有人用“言论自由”为抹黑造谣开脱，你怎么看？",
+    options: [
+      { t: "明确自由有边界，强硬指出造谣不属于言论自由", a: 2, e: 1 },
+      { t: "点破对方双标本质，其仅对自身偏好主张自由", b: 2, f: 1 },
+      { t: "认同该说辞，支持所有发言无需被约束限制", c: 2, g: 1 },
+      { t: "懒得争辩辩解，坚信懂者自懂无需多言", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "群里因为立场吵到失控，你通常扮演什么角色？",
+    options: [
+      { t: "强势出面控场，强行压制争吵拉回理性讨论", a: 2, e: 1 },
+      { t: "安静观察全局风向，不轻易加入任意对立阵营", b: 2, f: 1 },
+      { t: "主动拱火煽风，放大双方矛盾坐看全程热闹", c: 2, g: 1 },
+      { t: "全程潜水隐身，完全不沾染任何立场纷争", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "遇到“非黑即白”的二极管言论，你的反应是？",
+    options: [
+      { t: "直接批判极端二元思维，强硬否定绝对化判断", a: 2, e: 1 },
+      { t: "阐述事物中间地带，点明现实事件的复杂多面性", b: 2, f: 1 },
+      { t: "认同极端非黑即白观点，用简单立场划分所有事物", c: 2, g: 1 },
+      { t: "直接划走无视，不与极端片面的人进行对话", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "节奏一被带起来，大批人跟风批判无辜者，你会？",
+    options: [
+      { t: "勇敢站出来制止网暴，坚决拒绝盲目从众跟风作恶", a: 2, e: 1 },
+      { t: "梳理完整事实脉络，理性为被无端针对者澄清洗白", b: 2, f: 1 },
+      { t: "跟随大流参与批判，顺着舆论节奏一起攻击当事人", c: 2, g: 1 },
+      { t: "全程置身事外，静等舆论潮水褪去再看待一切", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "把不同观点者直接打成敌人，这种氛围你怎么看？",
+    options: [
+      { t: "极度排斥此氛围，直言党同伐异会让环境极端恶化", a: 2, e: 1 },
+      { t: "看透排他本质，指出此处已无理性交流探讨空间", b: 2, f: 1 },
+      { t: "融入该氛围，主动排斥异见，将不同观点全部敌对化", c: 2, g: 1 },
+      { t: "刻意低调隐藏观点，避免自身被针对卷入冲突", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "用情绪代替逻辑，用立场掩盖事实，你受得了吗？",
+    options: [
+      { t: "完全无法容忍，必须强硬纠正歪理回归客观道理", a: 2, e: 1 },
+      { t: "内心看得透彻，但是克制自身不轻易正面硬碰硬", b: 2, f: 1 },
+      { t: "自身也习惯立场先行，优先站队情绪而非客观事实", c: 2, g: 1 },
+      { t: "麻木无所谓，默认网络舆论本就全是情绪优先", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "一有争议就喊“打拳”“对立”来模糊焦点，你怎么应对？",
+    options: [
+      { t: "直接戳破转移话题套路，强硬把讨论拉回原本核心", a: 2, e: 1 },
+      { t: "深度分析对方刻意甩锅、回避问题的内在动机", b: 2, f: 1 },
+      { t: "顺着对方话术争吵，主动扩大对立偏离原本议题", c: 2, g: 1 },
+      { t: "直接放弃讨论，不参与此类毫无意义的烂仗对线", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "信息过载时代，你判断舆论真假的核心依据是？",
+    options: [
+      { t: "只认可完整证据链，完全不信任任何单方面片面叙事", a: 2, e: 1 },
+      { t: "核查信息源头与发布动机，综合多方谨慎判断真伪", b: 2, f: 1 },
+      { t: "只相信自己偏好立场的信息，排斥所有对立来源内容", c: 2, g: 1 },
+      { t: "懒得自行分辨真假，静待事件最终结果自然明朗", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "有人故意挑动地域、职业、身份对立，你的选择是？",
+    options: [
+      { t: "坚决强硬抵制，绝不助长任何群体分裂对立氛围", a: 2, e: 1 },
+      { t: "看穿挑事引流目的，公开提醒大众警惕刻意挑拨", b: 2, f: 1 },
+      { t: "附和挑拨言论，主动参与对立争吵放大群体矛盾", c: 2, g: 1 },
+      { t: "刻意回避相关内容，防止自身被对立情绪影响心态", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "网络键政越来越抽象化、梗化，严肃讨论变少，你觉得？",
+    options: [
+      { t: "深感惋惜，严肃议题被娱乐化消解失去讨论价值", a: 2, e: 1 },
+      { t: "认可现状，认为玩梗解构是对抗恶意节奏的高效方式", b: 2, f: 1 },
+      { t: "热衷抽象玩梗整活，全程娱乐化看待所有严肃议题", c: 2, g: 1 },
+      { t: "事不关己心态，网络发言只求自身开心无关其他", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "明明是常识问题，却被刻意歪曲成争议话题，你会？",
+    options: [
+      { t: "强硬重申基础常识，不惯着任何刻意诡辩歪曲行为", a: 2, e: 1 },
+      { t: "点明对方刻意制造矛盾、无事生非的主观意图", b: 2, f: 1 },
+      { t: "参与歪曲争论，故意抬杠把简单常识复杂化对立化", c: 2, g: 1 },
+      { t: "视作无关闲事，坚信常识无需争辩直接无视", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "舆论反转多次后，你对网络热点的态度是？",
+    options: [
+      { t: "极度谨慎克制，全程不轻易对外发表任何主观表态", a: 2, e: 1 },
+      { t: "早已麻木习惯，重点分析热点背后操盘推手与流量逻辑", b: 2, f: 1 },
+      { t: "依旧积极追热点，坚持多方梳理直至弄清完整全部真相", c: 2, g: 1 },
+      { t: "彻底放弃关注，认为所有热点追逐全是浪费自身精力", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "有人把自己的观点包装成“人间清醒”贩卖焦虑，你怎么看？",
+    options: [
+      { t: "直接揭穿流量收割本质，直言此类极端观点毫无价值", a: 2, e: 1 },
+      { t: "看穿营销套路内核，坚守自身心态绝不被焦虑情绪裹挟", b: 2, f: 1 },
+      { t: "深度认同并转发，跟随贩卖焦虑言论自我精神内耗", c: 2, g: 1 },
+      { t: "划过忽略即可，此类观点完全无法干扰自身生活心态", d: 2, h: 1 }
+    ]
+  },
+  {
+    q: "面对长期被抹黑的群体或地域，你会主动维护吗？",
+    options: [
+      { t: "主动强硬发声维护，坚决抵制长期固化刻板偏见", a: 2, e: 1 },
+      { t: "只用客观事实反驳偏见，全程理性克制不带情绪化", b: 2, f: 1 },
+      { t: "反向跟风抹黑，迎合大众偏见加剧群体负面印象", c: 2, g: 1 },
+      { t: "秉持多一事不如少一事，完全不介入任何维护与攻击", d: 2, h: 1 }
+    ]
+  }
+];
+const hats = [
+  {name:"大军阀",img:"images/1.webp",desc:"你习惯自己说了算，不太接受别人指挥。只要局面一展开，你就开始掌控节奏、安排分工，甚至默认规则由你来定。不是在参与，而是在主导一切。"},
+  {name:"野心家",img:"images/2.webp",desc:"你不只是想做好事情，而是想掌握局面。很多决定看似自然，其实都在往你预设的方向靠。目标不一定说出口，但你一直在往更高位置布局。"},
+  {name:"叛徒",img:"images/3.webp",desc:"你不会被原有立场束缚，一旦局势变化，你可以迅速调整方向。别人还在坚持，你已经换了路径。你更在意结果，而不是曾经站在哪一边。"},
+  {name:"走资派",img:"images/4.webp",desc:"你走姿非常标准，习惯用更现实、更有效率的方式解决问题。规则和路径可以调整，关键是结果要更好。在别人看来，你有点偏离原路线，但你觉得这才是可行路线。"},
+  {name:"投降派",img:"images/5.webp",desc:"你面对压力时更倾向于退一步处理。与其硬顶，不如先缓和局势再说。你不认为这是放弃，而是避免把事情推到无法收场的地步。"},
+  {name:"修正主义",img:"images/6.webp",desc:"你很少完全按原计划走，总会在过程中不断调整甚至改变方向。你觉得这叫优化，但在别人眼里，你已经和最初的路线不太一样了。"},
+  {name:"大恶霸",img:"images/7.webp",desc:"你习惯用强势方式推动事情发展，规则可以被压过去，别人意见也可以被忽略。只要你在场，节奏基本就会被你接管。"},
+  {name:"黑线人物",img:"images/8.webp",desc:"你做的事、说的话，总给人一种“方向不对”的感觉。表面看不出问题，但整体走向总是和主流不太一致，让人越看越觉得不对劲。"},
+  {name:"黑秀才",img:"images/9.webp",desc:"你擅长表达和输出观点，可以把一套说法讲得很完整。但问题在于，你输出的东西往往带着明显立场，很容易影响周围人的判断。"},
+  {name:"黑手",img:"images/10.webp",desc:"你没事就乐意让别人飞起来✈️，很多事情表面和你无关，但背后却有你的影子。你不一定站在台前，但关键节点往往是你在推动或操控方向。"},
+  {name:"黑帮凶",img:"images/11.webp",desc:"你不负责决策，但执行得非常彻底。一旦方向确定，你会毫不犹豫跟上，并且推动事情发展到更极端的位置。"},
+  {name:"经验主义",img:"images/12.webp",desc:"你更相信过去有效的方法，而不是新的理论或思路。遇到问题第一反应是套用旧经验，这让你稳定，但也容易忽视变化。"},
+  {name:"民主派",img:"images/13.webp",desc:"你更倾向于让大家一起参与决策，而不是单一方向推进。你认为这样更合理，但在某些情况下，也会让局面变得分散。"},
+  {name:"中庸之道",img:"images/14.webp",desc:"你习惯在各种立场之间找平衡，不太愿意走极端路线。冲突会被你压下来，但问题有时候也会被一起淡化。"},
+  {name:"绊脚石",img:"images/15.webp",desc:"你不一定反对事情推进，但你的存在确实会拖慢节奏。每一步都要确认、修正，结果就是整体进度被卡住。"},
+  {name:"墙头草",img:"images/16.webp",desc:"你对局势变化非常敏感，哪边更有优势就往哪边靠。你不觉得这是问题，但别人很难判断你到底站在哪一边。"},
+  {name:"造谣公司",img:"images/17.webp",desc:"你擅长放大信息甚至加工信息，一点线索就能扩展成完整说法。很多时候，局面还没发展，你已经先把“版本”讲出来了。"},
+  {name:"传话筒",img:"images/18.webp",desc:"你很少表达自己的判断，更习惯转述别人或上面的意思。信息在你这里流通很快，但基本不会被你改变或质疑。"},
+  {name:"逆流邪风",img:"images/19.webp",desc:"你总是和主流方向不一致，别人往哪走你就偏往反方向。不是一定要对，而是你很少愿意顺着既定路径走。"},
+  {name:"小爬虫",img:"images/20.webp",desc:"你存在感不强，但行为带着明显投机意味。你不会正面参与，但会在局势中寻找机会，方式也比较隐蔽。"},
+  {name:"混进群众的坏人",img:"images/21.webp",desc:"你看起来和大家没有区别，但行为却在悄悄改变局面。你不主动暴露，但你的参与方式一直在影响整体方向。"},
+  {name:"攻击领导",img:"images/22.webp",desc:"你表达非常直接，对上级或核心人物也不会收着说。有时候是直言，有时候则会被理解为对整体方向的冲击。"},
+  {name:"暗中盘算",img:"images/23.webp",desc:"你不会把想法摆在明面上，但内心一直在衡量和计算。别人看到的是沉默，你自己却已经想好了下一步。"},
+  {name:"奴隶主义",img:"images/24.webp",desc:"你习惯依附已有权威，很少主动质疑或独立判断。只要有明确指令，你就会完全照做，甚至不会去思考是否合理。"},
+  {name:"随机帽",img:"images/25.webp",desc:"你的表现过于平均，没有明显倾向。帽子工厂研究半天也下不了结论，最终决定：随机给你一顶，爱咋咋地。"}
+];
+let answers=new Array(questions.length).fill(null);
+function startTest(){
+  document.getElementById("startPage").style.display="none";
+  document.getElementById("testPage").style.display="block";
+  // 平滑显示进度条
+  document.getElementById("topBar").classList.add("show");
+  shuffledQuestions = shuffle(questions);
+  renderQuestions();
+  updateProgress();
+}
+function renderQuestions(){
+  const c=document.getElementById("questionsContainer");c.innerHTML="";
+  shuffledQuestions.forEach((q,i)=>{
+    let div=document.createElement("div");div.className="question";
+    let opts = shuffle(q.options);
+    let html=`<div class="q-title">${i+1}. ${q.q}</div>`;
+    opts.forEach((o,j)=>{
+      html+=`<div class="option" onclick="select(${i},${j})">${o.t}</div>`;
+    });
+    div.innerHTML=html;c.appendChild(div);
+  });
+}
+function select(q,o){
+  answers[q]=o;
+  let opts=document.querySelectorAll(".question")[q].querySelectorAll(".option");
+  opts.forEach(x=>x.classList.remove("selected"));
+  opts[o].classList.add("selected");
+  updateProgress();
+}
+function updateProgress(){
+  let done=answers.filter(x=>x!==null).length;
+  document.getElementById("progressText").innerText=`${done}/${questions.length} 题`;
+  document.getElementById("progressFill").style.width=(done/questions.length*100)+"%";
+}
+function showResult(){
+  if(answers.includes(null)){alert("做完再看帽子！");return;}
+  score={a:0,b:0,c:0,d:0,e:0,f:0,g:0,h:0};
+  function randWeight(base){let noise=(Math.random()-0.5)*1.2;return base+noise;}
+  let dimBias={a:1+(Math.random()-0.5)*0.2,b:1+(Math.random()-0.5)*0.2,c:1+(Math.random()-0.5)*0.2,d:1+(Math.random()-0.5)*0.2,e:1+(Math.random()-0.5)*0.2,f:1+(Math.random()-0.5)*0.2,g:1+(Math.random()-0.5)*0.2,h:1+(Math.random()-0.5)*0.2};
+  shuffledQuestions.forEach((q,i)=>{
+    let opts=shuffle(q.options);
+    let o=opts[answers[i]];
+    for(let k in o){if(score[k]!==undefined){score[k]+=randWeight(o[k])*dimBias[k];}}
+  });
+  let sorted=Object.entries(score).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  let p=sorted[0].k;let s=sorted[1].k;
+  let maxVal=sorted[0].v;let minVal=sorted[sorted.length-1].v;let hat;
+  if(maxVal-minVal<6){hat=hats[24];}else{
+    if(p==="a"){if(s==="c")hat=hats[0];else if(s==="b")hat=hats[1];else if(s==="d")hat=hats[6];else if(s==="e")hat=hats[21];else hat=hats[3];}
+    else if(p==="b"){if(s==="a")hat=hats[23];else if(s==="c")hat=hats[9];else if(s==="d")hat=hats[7];else if(s==="f")hat=hats[2];else hat=hats[8];}
+    else if(p==="c"){if(s==="a")hat=hats[10];else if(s==="g")hat=hats[16];else if(s==="d")hat=hats[11];else if(s==="h")hat=hats[17];else hat=hats[18];}
+    else if(p==="d"){if(s==="a")hat=hats[4];else if(s==="b")hat=hats[5];else if(s==="c")hat=hats[13];else if(s==="h")hat=hats[23];else hat=hats[14];}
+    if(score.a<6&&score.c>18)hat=hats[19];if(score.f>18)hat=hats[15];if(score.g>20)hat=hats[16];if(score.h>20)hat=hats[23];
+    if(score.e>20&&score.a>15)hat=hats[21];if(score.b>20&&score.c<8)hat=hats[8];if(score.c>20&&score.d<8)hat=hats[18];
+    if(score.c>15&&score.b>15&&score.a<10)hat=hats[20];if(score.d>15&&score.g>15)hat=hats[12];
+  }
+  document.getElementById("resultImage").src=hat.img;
+  document.getElementById("hatName").innerText=`你被扣上了【${hat.name}】的帽子 😭`;
+  document.getElementById("hatDesc").innerText=hat.desc;
+  document.getElementById("scoreText").innerHTML=`
+气场：${score.a.toFixed(1)}｜心机：${score.b.toFixed(1)}｜执行：${score.c.toFixed(1)}｜稳定：${score.d.toFixed(1)}<br>
+立场：${score.e.toFixed(1)}｜灵活：${score.f.toFixed(1)}｜传播：${score.g.toFixed(1)}｜服从：${score.h.toFixed(1)}
+`;
+  document.getElementById("testPage").style.display="none";
+  document.getElementById("resultPage").style.display="block";
+}
+function restart(){
+  answers=new Array(questions.length).fill(null);
+  document.getElementById("resultPage").style.display="none";
+  document.getElementById("startPage").style.display="block";
+  // 回到首页隐藏进度条
+  document.getElementById("topBar").classList.remove("show");
+  updateProgress();
+}
+</script>
+</body>
+</html>
