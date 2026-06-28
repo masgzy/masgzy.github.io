@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MC 启动指南 - Minecraft Wiki</title>
+<script type="importmap">
+{
+  "imports": {
+    "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.4.1/+esm",
+    "animejs/timeline": "https://cdn.jsdelivr.net/npm/animejs@4.4.1/+esm",
+    "animejs/utils": "https://cdn.jsdelivr.net/npm/animejs@4.4.1/+esm"
+  }
+}
+</script>
+<style>
+  :root{
+    --bg: #f0f2f5;
+    --sidebar-bg: #ffffff;
+    --card-bg: #ffffff;
+    --card-border: #e4e7ed;
+    --text: #1d2129;
+    --text-soft: #4e5969;
+    --text-muted: #86909c;
+    --primary: #165dff;
+    --primary-light: #e8f3ff;
+    --primary-hover: #4080ff;
+    --success: #00b42a;
+    --success-bg: #e8ffea;
+    --warn: #ff7d00;
+    --warn-bg: #fff7e8;
+    --danger: #f53f3f;
+    --danger-bg: #ffece8;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+    --transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  *{ box-sizing: border-box; margin: 0; padding: 0; }
+  html, body{
+    min-height: 100vh;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 14px;
+    overflow-x: hidden;
+  }
+
+  /* ========== 布局 ========== */
+  .app{ display: flex; min-height: 100vh; }
+
+  /* ========== 侧边栏 ========== */
+  .sidebar{
+    width: 220px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--card-border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+    padding: 16px 0;
+  }
+  .sidebar-brand{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 8px;
+  }
+  .sidebar-brand .logo{
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff;
+    box-shadow: 0 2px 8px rgba(22,93,255,0.3);
+  }
+  .sidebar-brand .title{
+    font-size: 16px; font-weight: 700; color: var(--text);
+  }
+  .sidebar-brand .sub{
+    font-size: 11px; color: var(--text-muted);
+  }
+  .sidebar-nav{ flex: 1; padding: 8px 12px; }
+  .nav-item{
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    color: var(--text-soft);
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  .nav-item::before{
+    content: '';
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 0; background: var(--primary);
+    border-radius: 0 2px 2px 0;
+    transition: height 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .nav-item:hover{ background: var(--primary-light); color: var(--primary); }
+  .nav-item.active{ background: var(--primary-light); color: var(--primary); font-weight: 600; }
+  .nav-item.active::before{ height: 20px; }
+  .nav-icon{ font-size: 16px; width: 20px; text-align: center; }
+  .nav-label{ flex: 1; }
+  .nav-badge{
+    background: var(--primary); color: #fff;
+    font-size: 10px; padding: 1px 6px;
+    border-radius: 10px; font-weight: 600;
+  }
+  .sidebar-footer{
+    padding: 12px 16px;
+    border-top: 1px solid var(--card-border);
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ========== 主内容区 ========== */
+  .main-content{
+    flex: 1;
+    margin-left: 220px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .topbar{
+    height: 56px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .topbar-left{ display: flex; align-items: center; gap: 12px; }
+  .breadcrumb{ font-size: 14px; color: var(--text-muted); }
+  .breadcrumb strong{ color: var(--text); font-weight: 600; }
+  .topbar-right{ display: flex; align-items: center; gap: 12px; }
+  .search-box{
+    display: flex; align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    padding: 6px 12px;
+    gap: 6px;
+    width: 220px;
+    transition: var(--transition);
+  }
+  .search-box:focus-within{
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(22,93,255,0.1);
+  }
+  .search-box input{
+    border: none; background: none; outline: none;
+    font-size: 13px; color: var(--text);
+    width: 100%;
+  }
+  .search-box input::placeholder{ color: var(--text-muted); }
+
+  /* ========== 内容容器 ========== */
+  .content-wrap{
+    flex: 1;
+    padding: 20px 24px 40px;
+    max-width: 1100px;
+  }
+
+  /* ========== 卡片 ========== */
+  .card{
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .card-header{
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-title{
+    font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .tag{
+    background: var(--primary); color: #fff;
+    font-size: 11px; padding: 2px 8px;
+    border-radius: 4px; font-weight: 600;
+  }
+  .card-body{ padding: 20px; }
+
+  /* ========== 统计卡片行 ========== */
+  .stats-row{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .stat-card{
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .stat-icon{
+    width: 48px; height: 48px;
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .stat-icon.blue{ background: var(--primary-light); }
+  .stat-icon.green{ background: var(--success-bg); }
+  .stat-icon.orange{ background: var(--warn-bg); }
+  .stat-icon.red{ background: var(--danger-bg); }
+  .stat-info{ flex: 1; }
+  .stat-value{
+    font-size: 24px; font-weight: 700;
+    color: var(--text); line-height: 1.2;
+  }
+  .stat-label{
+    font-size: 12px; color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .stat-change{
+    font-size: 12px; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .stat-change.up{ color: var(--success); background: var(--success-bg); }
+  .stat-change.down{ color: var(--danger); background: var(--danger-bg); }
+
+  /* ========== 步骤指示器 ========== */
+  .steps{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 0 4px;
+  }
+  .step{
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+  }
+  .step:hover{ border-color: var(--primary); color: var(--primary); }
+  .step.active{
+    background: var(--primary); color: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 2px 12px rgba(22,93,255,0.3);
+  }
+  .step-num{
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+  .step.active .step-num{ background: rgba(255,255,255,0.3); }
+  .step-arrow{ color: var(--text-muted); font-size: 12px; }
+
+  /* ========== 内容样式 ========== */
+  .content-text p{ margin-bottom: 12px; font-size: 14px; color: var(--text-soft); line-height: 1.75; }
+  .content-text strong{ color: var(--text); font-weight: 600; }
+  .content-text ul{ margin: 8px 0 14px 20px; font-size: 14px; color: var(--text-soft); }
+  .content-text ul li{ margin-bottom: 6px; }
+  .content-text code{
+    background: var(--bg); color: var(--primary);
+    padding: 2px 6px; border-radius: 4px;
+    font-size: 13px; font-family: "SF Mono", "Fira Code", monospace;
+  }
+  .content-text h3{
+    font-size: 15px; font-weight: 700;
+    color: var(--text); margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .content-text h4{
+    font-size: 14px; font-weight: 600;
+    color: var(--text); margin: 16px 0 8px;
+  }
+
+  /* ========== 按钮 ========== */
+  .btn{
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 18px;
+    border-radius: var(--radius-md);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary{
+    background: var(--primary); color: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(22,93,255,0.25);
+  }
+  .btn-primary:hover{
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(22,93,255,0.35);
+  }
+  .btn-secondary{
+    background: var(--bg); color: var(--text-soft);
+    border-color: var(--card-border);
+  }
+  .btn-secondary:hover{
+    border-color: var(--primary); color: var(--primary);
+    background: var(--primary-light);
+  }
+  .btn-done{
+    background: var(--success-bg) !important;
+    color: var(--success) !important;
+    border-color: var(--success) !important;
+    cursor: default;
+  }
+  .btn-done:hover{
+    transform: none !important;
+    background: var(--success-bg) !important;
+  }
+  .btn-group{ display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+
+  /* ========== 提示框 ========== */
+  .alert{
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    margin: 12px 0;
+    font-size: 13px;
+    display: flex; align-items: flex-start; gap: 10px;
+    border-left: 3px solid transparent;
+  }
+  .alert-info{ background: var(--primary-light); border-left-color: var(--primary); }
+  .alert-info .alert-icon{ color: var(--primary); }
+  .alert-success{ background: var(--success-bg); border-left-color: var(--success); }
+  .alert-success .alert-icon{ color: var(--success); }
+  .alert-warn{ background: var(--warn-bg); border-left-color: var(--warn); }
+  .alert-warn .alert-icon{ color: var(--warn); }
+  .alert-danger{ background: var(--danger-bg); border-left-color: var(--danger); }
+  .alert-danger .alert-icon{ color: var(--danger); }
+  .alert-icon{ font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .alert-content{ flex: 1; }
+  .alert-content strong{ color: var(--text); font-weight: 600; }
+
+  /* ========== 信息卡片网格 ========== */
+  .info-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .info-item{
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    display: flex; flex-direction: column;
+    gap: 4px;
+  }
+  .info-item .k{ font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .info-item .v{ font-size: 14px; color: var(--text); font-weight: 600; }
+
+  /* ========== 链接卡片 ========== */
+  .link-card{
+    background: var(--bg);
+    border: 1px dashed var(--card-border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    word-break: break-all;
+    font-family: "SF Mono", monospace;
+    margin-top: 8px;
+  }
+
+  /* ========== 进度环 ========== */
+  .progress-ring-wrap{
+    display: flex; align-items: center; justify-content: center;
+    gap: 24px; padding: 20px 0;
+  }
+  .progress-item{ text-align: center; }
+  .progress-ring{
+    width: 80px; height: 80px;
+    position: relative;
+  }
+  .progress-ring svg{ transform: rotate(-90deg); }
+  .progress-ring-bg{ fill: none; stroke: var(--card-border); stroke-width: 6; }
+  .progress-ring-fill{ fill: none; stroke: var(--primary); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 220; stroke-dashoffset: 220; }
+  .progress-value{
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 16px; font-weight: 700; color: var(--text);
+  }
+  .progress-label{ font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+  /* ========== FAQ 折叠 ========== */
+  .faq-item{
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+  .faq-question{
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    font-weight: 600; font-size: 14px;
+    color: var(--text);
+    transition: background 0.2s;
+  }
+  .faq-question:hover{ background: var(--bg); }
+  .faq-question .q-icon{ color: var(--primary); margin-right: 8px; font-weight: 700; }
+  .faq-toggle{
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .faq-item.open .faq-toggle{ transform: rotate(180deg); }
+  .faq-answer{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .faq-answer-inner{
+    padding: 0 16px 16px;
+    font-size: 14px; color: var(--text-soft);
+    line-height: 1.75;
+  }
+  .faq-item .faq-answer{ max-height: 300px; }
+  .faq-item:not(.open) .faq-answer{ max-height: 0; }
+
+  /* ========== 页脚 ========== */
+  .page-footer{
+    padding: 20px 24px;
+    border-top: 1px solid var(--card-border);
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--card-bg);
+  }
+
+  /* ========== 响应式 ========== */
+  @media (max-width: 900px){
+    .sidebar{ transform: translateX(-100%); transition: transform 0.3s ease; }
+    .sidebar.open{ transform: translateX(0); }
+    .main-content{ margin-left: 0; }
+    .stats-row{ grid-template-columns: repeat(2, 1fr); }
+    .content-wrap{ padding: 16px; }
+  }
+  @media (max-width: 600px){
+    .stats-row{ grid-template-columns: 1fr; }
+    .steps{ flex-wrap: wrap; }
+    .search-box{ display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <!-- 侧边栏 -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo">⛏</div>
+        <div>
+          <div class="title">MC 启动指南</div>
+          <div class="sub">Minecraft Wiki</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" href="#overview" data-section="overview">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">概览</span>
+        </a>
+        <a class="nav-item" href="#step1" data-section="step1">
+          <span class="nav-icon">📧</span>
+          <span class="nav-label">注册 Outlook</span>
+          <span class="nav-badge">1</span>
+        </a>
+        <a class="nav-item" href="#step2" data-section="step2">
+          <span class="nav-icon">⬇</span>
+          <span class="nav-label">下载游戏</span>
+          <span class="nav-badge">2</span>
+        </a>
+        <a class="nav-item" href="#faq" data-section="faq">
+          <span class="nav-icon">❓</span>
+          <span class="nav-label">常见问题</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        v1.0 · 2026-06-28
+      </div>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <span class="breadcrumb">首页 <span style="color:var(--text-muted)">/</span> <strong>MC 启动指南</strong></span>
+        </div>
+        <div class="topbar-right">
+          <div class="search-box">
+            🔍 <input type="text" placeholder="搜索指南..." />
+          </div>
+        </div>
+      </header>
+
+      <div class="content-wrap">
+        <!-- 统计卡片 -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon blue" id="icon-step1">📧</div>
+            <div class="stat-info">
+              <div class="stat-value" id="value-step1" data-count="0">0</div>
+              <div class="stat-label">注册进度</div>
+            </div>
+            <div class="stat-change up" id="badge-step1">待完成</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green" id="icon-step2">⬇</div>
+            <div class="stat-info">
+              <div class="stat-value" id="value-step2" data-count="0">0</div>
+              <div class="stat-label">下载进度</div>
+            </div>
+            <div class="stat-change up" id="badge-step2">待完成</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">⏱</div>
+            <div class="stat-info">
+              <div class="stat-value" data-count="10">~10</div>
+              <div class="stat-label">预计耗时(分钟)</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red">⭐</div>
+            <div class="stat-info">
+              <div class="stat-value" data-count="1">1</div>
+              <div class="stat-label">难度等级</div>
+            </div>
+            <div class="stat-change up">简单</div>
+          </div>
+        </div>
+
+        <!-- 简介卡片 -->
+        <div class="card" id="overview">
+          <div class="card-header">
+            <div class="card-title">
+              📖 简介
+              <span class="tag">必读</span>
+            </div>
+          </div>
+          <div class="card-body content-text">
+            <p>本指南用于教一名新玩家完成 Minecraft 的开玩准备。整个流程包含<strong>两个步骤</strong> —— 注册微软账号，以及下载游戏客户端。</p>
+            <p>跟着下面的步骤走，大约 <strong>10 分钟</strong>就能开始游戏。</p>
+          </div>
+        </div>
+
+        <!-- 步骤指示器 -->
+        <div class="steps">
+          <div class="step active" data-target="step1">
+            <span class="step-num">1</span>
+            <span>注册 Outlook</span>
+          </div>
+          <span class="step-arrow">→</span>
+          <div class="step" data-target="step2">
+            <span class="step-num">2</span>
+            <span>下载 Minecraft</span>
+          </div>
+          <span class="step-arrow">→</span>
+          <div class="step" data-target="faq">
+            <span class="step-num">?</span>
+            <span>常见问题</span>
+          </div>
+        </div>
+
+        <!-- 步骤一 -->
+        <div class="card" id="step1">
+          <div class="card-header">
+            <div class="card-title">
+              <span style="color:var(--primary)">01</span>
+              注册 Outlook 邮箱
+            </div>
+          </div>
+          <div class="card-body content-text">
+            <h3>为什么要注册？</h3>
+            <p>微软账户是登录 <strong>Minecraft 基岩版</strong> 的必要条件。注册时使用的就是 <strong>Outlook / Hotmail 邮箱</strong> —— 你可以理解为游戏账号本体。</p>
+
+            <h3>操作流程</h3>
+            <p>点击下方按钮，跳转至微软官方注册页。按提示填写：</p>
+            <ul>
+              <li>邮箱名（将成为你的 Minecraft 登录账号）</li>
+              <li>密码</li>
+              <li>出生日期与地区</li>
+              <li>人机验证</li>
+            </ul>
+            <p>整个过程大约 <strong>1~2 分钟</strong>。</p>
+
+            <div class="alert alert-info">
+              <span class="alert-icon">💡</span>
+              <div class="alert-content">
+                <strong>建议：</strong>注册时邮箱后缀建议选 <code>@outlook.com</code>，比 @hotmail.com 更稳定，后续登录 MC 也更不容易出问题。
+              </div>
+            </div>
+
+            <div class="btn-group">
+              <a class="btn btn-primary" href="https://outlook.live.com/mail/?prompt=create_account" target="_blank" rel="noopener">
+                🔗 去注册 Outlook →
+              </a>
+              <button class="btn btn-secondary" id="btn-done-step1" onclick="markDone('step1')">
+                ✅ 我已完成注册
+              </button>
+            </div>
+
+            <div class="alert alert-success">
+              <span class="alert-icon">💬</span>
+              <div class="alert-content">
+                <strong>提示：</strong>不会注册随时微信/QQ问我，一对一指导，5 分钟出号。
+              </div>
+            </div>
+
+            <div class="alert alert-warn">
+              <span class="alert-icon">⚠</span>
+              <div class="alert-content">
+                <strong>注意：</strong>请务必记住注册的邮箱和密码，登录 MC 时需要用到。建议用备忘录或微信收藏存一份。
+              </div>
+            </div>
+
+            <div class="alert alert-info">
+              <span class="alert-icon">📱</span>
+              <div class="alert-content">
+                <strong>长期使用：</strong>如果打算长期使用这个 Outlook 邮箱，建议去手机应用市场下载 <strong>Outlook</strong> App，收发邮件、管理账号更方便。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤二 -->
+        <div class="card" id="step2">
+          <div class="card-header">
+            <div class="card-title">
+              <span style="color:var(--primary)">02</span>
+              下载 Minecraft
+            </div>
+          </div>
+          <div class="card-body content-text">
+            <h3>下载说明</h3>
+            <p>邮箱注册完成后，下载 <strong>Minecraft 基岩版 安卓安装包</strong>(.apk)。推荐使用<strong>主链接</strong>，主链接速度慢或无法访问时切换备用链接。</p>
+
+            <h3>主链接</h3>
+            <div class="btn-group">
+              <a class="btn btn-primary" href="https://pip.996855.xyz/https://github.com/yuyuqqaa/su/releases/download/1/Minecraft.26.30.5.armv8.apk" target="_blank" rel="noopener">
+                ⬇ 下载 Minecraft · 主链接 ↓
+              </a>
+              <button class="btn btn-secondary" id="btn-done-step2" onclick="markDone('step2')">
+                ✅ 我已完成下载
+              </button>
+            </div>
+            <div style="margin-top:8px">
+              <span style="background:var(--warn-bg);color:var(--warn);font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600">⚡ 稳定度不高 · 多试几次 · 速度快</span>
+            </div>
+
+            <div class="alert alert-info" style="margin-top:16px">
+              <span class="alert-icon">📦</span>
+              <div class="alert-content">
+                <strong>文件信息：</strong>版本 26.30.5 · armv8 架构 · 大小 674.21 MB (706,956,524 字节) · 免费版
+              </div>
+            </div>
+
+            <h3>备用链接</h3>
+            <p>当主链接无法访问时使用：</p>
+            <div class="btn-group">
+              <a class="btn btn-secondary" href="https://gh.996855.xyz/https://github.com/yuyuqqaa/su/releases/download/1/Minecraft.26.30.5.armv8.apk" target="_blank" rel="noopener">
+                ⬇ 备用链接 ↓
+              </a>
+            </div>
+            <div class="link-card">
+              https://gh.996855.xyz/https://github.com/yuyuqqaa/su/releases/download/1/Minecraft.26.30.5.armv8.apk
+            </div>
+
+            <div class="alert alert-success" style="margin-top:16px">
+              <span class="alert-icon">💡</span>
+              <div class="alert-content">
+                <strong>安装提示：</strong>下载完成后点击 APK 文件安装。如果手机提示"未知来源应用"，在设置里允许该来源后再装。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="card" id="faq">
+          <div class="card-header">
+            <div class="card-title">
+              <span style="color:var(--primary)">?</span>
+              常见问题
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="faq-item open">
+              <div class="faq-question">
+                <span><span class="q-icon">Q</span>注册需要手机号吗？</span>
+                <span class="faq-toggle" style="transform: rotate(180deg);">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  不需要。直接选 <code>@outlook.com</code> 或 <code>@hotmail.com</code> 域名，填资料就能注册，完全不用手机号。
+                </div>
+              </div>
+            </div>
+            <div class="faq-item open">
+              <div class="faq-question">
+                <span><span class="q-icon">Q</span>游戏是免费的吗？</span>
+                <span class="faq-toggle" style="transform: rotate(180deg);">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  是的，本页面提供的是<strong>免费版</strong>安装包，直接下载安装就能玩，无需付费购买。
+                </div>
+              </div>
+            </div>
+            <div class="faq-item open">
+              <div class="faq-question">
+                <span><span class="q-icon">Q</span>链接失效了怎么办？</span>
+                <span class="faq-toggle" style="transform: rotate(180deg);">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  把页面截图发给我，我补新链接。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="page-footer">
+        本页面基于 Minecraft Wiki 风格设计 · 内容仅供个人使用 · v1.0
+      </footer>
+    </main>
+  </div>
+
+  <script type="module">
+    import { animate, stagger, createSpring } from 'animejs';
+
+    // ===== 页面加载入场动画 =====
+    // 统计卡片交错入场
+    animate('.stat-card', {
+      opacity: { from: 0, to: 1 },
+      translateY: { from: 30, to: 0 },
+      duration: 600,
+      delay: stagger(100, { from: 'first' }),
+      ease: 'outQuint'
+    });
+
+    // 卡片交错入场
+    animate('.card', {
+      opacity: { from: 0, to: 1 },
+      translateY: { from: 30, to: 0 },
+      duration: 700,
+      delay: stagger(120, { from: 'first', start: 400 }),
+      ease: 'outQuint'
+    });
+
+    // 步骤条弹簧动画
+    const stepSpring = createSpring({ mass: 1, stiffness: 200, damping: 15 });
+    animate('.step', {
+      scale: { from: 0.8, to: 1 },
+      opacity: { from: 0, to: 1 },
+      duration: 500,
+      delay: stagger(80, { from: 'first', start: 600 }),
+      ease: stepSpring
+    });
+
+    // 侧边栏导航项交错入场
+    animate('.nav-item', {
+      translateX: { from: -20, to: 0 },
+      opacity: { from: 0, to: 1 },
+      duration: 400,
+      delay: stagger(60, { from: 'first', start: 200 }),
+      ease: 'outQuad'
+    });
+
+    // 统计数字滚动动画
+    document.querySelectorAll('.stat-value[data-count]').forEach(el => {
+      const target = parseInt(el.dataset.count) || 0;
+      if (target > 0) {
+        animate(el, {
+          innerHTML: { from: 0, to: target },
+          duration: 1200,
+          delay: 800,
+          ease: 'outQuint',
+          modifier: v => Math.round(v)
+        });
+      }
+    });
+
+    // ===== FAQ 折叠交互 =====
+    document.querySelectorAll('.faq-question').forEach(q => {
+      q.addEventListener('click', () => {
+        const item = q.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+
+        // 切换当前（不关闭其他，每个独立控制）
+        item.classList.toggle('open');
+        const toggle = q.querySelector('.faq-toggle');
+        animate(toggle, {
+          rotate: { to: isOpen ? 0 : 180 },
+          duration: 300,
+          ease: 'outQuint'
+        });
+
+        // 内容弹性展开/收起
+        const answer = item.querySelector('.faq-answer-inner');
+        if (!isOpen) {
+          animate(answer, {
+            opacity: { from: 0, to: 1 },
+            translateY: { from: -10, to: 0 },
+            duration: 400,
+            delay: 100,
+            ease: 'outQuint'
+          });
+        }
+      });
+    });
+
+    // ===== 步骤条点击高亮 =====
+    document.querySelectorAll('.step').forEach(step => {
+      step.addEventListener('click', () => {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        step.classList.add('active');
+
+        // 弹簧缩放反馈
+        animate(step, {
+          scale: [1, 1.05, 1],
+          duration: 300,
+          ease: createSpring({ mass: 0.5, stiffness: 300, damping: 10 })
+        });
+
+        // 滚动到对应区域
+        const target = step.dataset.target;
+        const el = document.getElementById(target);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // ===== 侧边栏导航高亮 =====
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+
+        const target = item.dataset.section;
+        const el = document.getElementById(target);
+        if (el && target !== 'overview') {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (target === 'overview') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ===== 按钮悬停微交互 =====
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('mouseenter', () => {
+        animate(btn, {
+          scale: { to: 1.02 },
+          duration: 200,
+          ease: 'outQuad'
+        });
+      });
+      btn.addEventListener('mouseleave', () => {
+        animate(btn, {
+          scale: { to: 1 },
+          duration: 200,
+          ease: 'outQuad'
+        });
+      });
+    });
+
+    // ===== 搜索框聚焦动画 =====
+    const searchBox = document.querySelector('.search-box');
+    const searchInput = searchBox?.querySelector('input');
+    if (searchInput) {
+      searchInput.addEventListener('focus', () => {
+        animate(searchBox, {
+          scale: { to: 1.02 },
+          duration: 200,
+          ease: 'outQuad'
+        });
+      });
+      searchInput.addEventListener('blur', () => {
+        animate(searchBox, {
+          scale: { to: 1 },
+          duration: 200,
+          ease: 'outQuad'
+        });
+      });
+    }
+
+    // ===== 滚动触发卡片浮现 =====
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animate(entry.target, {
+            opacity: { from: 0.5, to: 1 },
+            translateY: { from: 15, to: 0 },
+            duration: 500,
+            ease: 'outQuint'
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card').forEach(card => observer.observe(card));
+
+    // ===== 完成状态管理 =====
+    const progress = { step1: false, step2: false };
+
+    function markDone(step) {
+      if (progress[step]) return;
+      progress[step] = true;
+
+      const btn = document.getElementById('btn-done-' + step);
+      const value = document.getElementById('value-' + step);
+      const badge = document.getElementById('badge-' + step);
+      const icon = document.getElementById('icon-' + step);
+
+      // 按钮变绿 + 禁用
+      btn.classList.add('btn-done');
+      btn.innerHTML = '✅ 已完成';
+      btn.disabled = true;
+
+      // 统计数字滚动到 100
+      animate(value, {
+        innerHTML: { from: 0, to: 100 },
+        duration: 800,
+        ease: 'outQuint',
+        modifier: v => Math.round(v)
+      });
+
+      // 徽章变绿色
+      badge.textContent = '已完成';
+      badge.classList.remove('up');
+      badge.style.color = 'var(--success)';
+      badge.style.background = 'var(--success-bg)';
+
+      // 图标变绿
+      if (icon) {
+        icon.classList.remove('blue', 'green');
+        icon.classList.add('green');
+      }
+
+      // 步骤条更新
+      const stepEl = document.querySelector('.step[data-target="' + step + '"]');
+      if (stepEl) {
+        stepEl.style.background = 'var(--success)';
+        stepEl.style.borderColor = 'var(--success)';
+        stepEl.style.color = '#fff';
+        stepEl.style.boxShadow = '0 2px 12px rgba(0,180,42,0.3)';
+      }
+
+      // 保存到本地
+      try { localStorage.setItem('mc_guide_' + step, 'done'); } catch(e) {}
+
+      // 检查是否全部完成
+      if (progress.step1 && progress.step2) {
+        setTimeout(() => {
+          const overview = document.querySelector('.card#overview .card-body');
+          if (overview && !document.getElementById('all-done-notice')) {
+            const notice = document.createElement('div');
+            notice.id = 'all-done-notice';
+            notice.className = 'alert alert-success';
+            notice.style.marginTop = '12px';
+            notice.innerHTML = '<span class="alert-icon">🎉</span><div class="alert-content"><strong>恭喜！</strong>所有步骤已完成，可以开始游戏了！</div>';
+            overview.appendChild(notice);
+            animate(notice, { opacity: [0, 1], translateY: [10, 0], duration: 500, ease: 'outQuint' });
+          }
+        }, 600);
+      }
+    }
+
+    // 页面加载时恢复状态
+    function restoreProgress() {
+      ['step1', 'step2'].forEach(step => {
+        try {
+          if (localStorage.getItem('mc_guide_' + step) === 'done') {
+            markDone(step);
+          }
+        } catch(e) {}
+      });
+    }
+    restoreProgress();
+  </script>
+</body>
+</html>
