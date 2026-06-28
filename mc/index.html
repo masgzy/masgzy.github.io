@@ -952,7 +952,7 @@
     // ===== 完成状态管理 =====
     const progress = { step1: false, step2: false };
 
-    function markDone(step) {
+    window.markDone = function(step) {
       if (progress[step]) return;
       progress[step] = true;
 
