@@ -28,4 +28,5 @@ function generateFileList() {
 document.addEventListener('DOMContentLoaded', () => {
     generateFileList();
     initBackgroundEffects();
+    window.runGlassAnimations?.();
 });

@@ -94,6 +94,7 @@
         videoPlayer.src = url;
         playerSection.style.display = 'block';
         movieGrid.style.display = 'none';
+        window.runGlassAnimations?.();
         
         // 滚动到顶部
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -117,5 +118,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         renderMovies();
         initBackgroundEffects();
+        window.runGlassAnimations?.();
     });
 })();

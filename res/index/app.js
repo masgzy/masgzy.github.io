@@ -1,19 +1,14 @@
-// 页面加载动画
-function hideLoader() {
-  const loader = document.querySelector('.page-loader');
-  const container = document.querySelector('.container');
-  
-  if (loader) {
-    loader.classList.add('hidden');
-  }
-  if (container) {
-    container.classList.add('visible');
-  }
-}
-
 // 渲染卡片
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("cards-container");
+
+  if (container.children.length > 0) {
+    initBackgroundEffects();
+    window.runGlassAnimations?.();
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
 
   cards.forEach((card, index) => {
     const cardElement = document.createElement("div");
@@ -78,9 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     cardElement.appendChild(button);
 
-    container.appendChild(cardElement);
+    fragment.appendChild(cardElement);
   });
 
-  setTimeout(hideLoader, 300);
+  container.appendChild(fragment);
   initBackgroundEffects();
+  window.runGlassAnimations?.();
 });

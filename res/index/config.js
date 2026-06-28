@@ -15,12 +15,13 @@ const cards = [
     title: "XBTI",
     description: "一系列XBTI测试",
     link: "/bti",
-    iconSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;opacity:0.75">
-  <!-- 人头轮廓（已居中） -->
-  <circle cx="12" cy="12" r="4" />
-  <path d="M6 22 C6 17, 18 17, 18 22" />
-</svg>
-`
+    iconSvg: `<svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px;opacity:0.82" aria-hidden="true">
+      <path d="M9.8 4.8c-3 0-5 2.25-5 5.35 0 2.25 1.1 3.95 2.65 4.8v3.45h4.3v-2.35h1.75c1.05 0 1.8-.75 1.8-1.8v-1.1h1.35c.55 0 .85-.62.52-1.06l-1.87-2.54c-.3-2.74-2.25-4.75-5.5-4.75Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+      <path d="M18.6 5.4h1.9M18.6 9.2h1.9M18.6 13h1.9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      <circle cx="7.9" cy="9.2" r="1.05" fill="currentColor" opacity="0.42"/>
+      <circle cx="11" cy="8.15" r="1.05" fill="currentColor" opacity="0.72"/>
+      <circle cx="11.8" cy="11.4" r="1.05" fill="currentColor" opacity="0.52"/>
+    </svg>`
   }
 ];
 
